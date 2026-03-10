@@ -1,83 +1,97 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // --- 기본 설정 ----------------------------------------------------------------
 const canvasContainer = document.getElementById('canvas-container');
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(50, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 canvasContainer.appendChild(renderer.domElement);
 
-camera.position.set(0, 2, 8);
+camera.position.set(0, 0, 7);
 
 // --- 컨트롤 -----------------------------------------------------------------
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.autoRotate = true;
-controls.autoRotateSpeed = 0.5;
+controls.dampingFactor = 0.05;
+controls.target.set(0, -1, 0);
 
 // --- 조명 -------------------------------------------------------------------
-scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-const pointLight = new THREE.PointLight(0x00f2ff, 2);
-pointLight.position.set(10, 10, 10);
-scene.add(pointLight);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+scene.add(ambientLight);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+directionalLight.position.set(5, 5, 5);
+scene.add(directionalLight);
 
 // --- 재질 (Materials) ------------------------------------------------------
-const holoMaterial = new THREE.MeshPhongMaterial({
-    color: 0x00f2ff,
+const defaultMaterial = new THREE.MeshStandardMaterial({
+    color: 0x00aaff,
+    emissive: 0x0077cc,
+    emissiveIntensity: 0.5,
     wireframe: true,
-    transparent: true,
-    opacity: 0.3,
-    emissive: 0x00f2ff,
-    emissiveIntensity: 0.5
 });
-
-const hoverMaterial = new THREE.MeshPhongMaterial({
-    color: 0xffaa00,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.8,
+const hoverMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffaa00, 
     emissive: 0xffaa00,
-    emissiveIntensity: 1
+    emissiveIntensity: 1.0,
+    wireframe: true,
 });
 
-// --- 인체 모델 및 히트박스 -----------------------------------------------------
-const bodyGroup = new THREE.Group();
-const hitboxGroup = new THREE.Group();
+// --- 3D 모델 및 클릭 타겟 -----------------------------------------------------
+const loader = new GLTFLoader();
+let model;
+const clickTargets = new THREE.Group();
 const bodyPartMapping = {}; 
 
-function createPart(geo, name, category, pos, rot = [0,0,0], scale = [1,1,1]) {
-    const mesh = new THREE.Mesh(geo, holoMaterial.clone());
-    mesh.position.set(...pos);
-    mesh.rotation.set(...rot);
-    mesh.scale.set(...scale);
-    bodyGroup.add(mesh);
+loader.load(
+    'https://threejs.org/examples/models/gltf/Human.gltf', 
+    (gltf) => {
+        model = gltf.scene;
+        model.scale.set(0.5, 0.5, 0.5);
+        model.position.y = -2.5;
 
-    // 투명 히트박스 (클릭 판정용)
-    const hitbox = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ visible: false }));
-    hitbox.position.set(...pos);
-    hitbox.rotation.set(...rot);
-    hitbox.scale.set(...scale);
-    hitbox.name = name;
-    hitboxGroup.add(hitbox);
+        model.traverse((child) => {
+            if (child.isMesh) {
+                child.material = defaultMaterial;
+            }
+        });
+
+        scene.add(model);
+        createClickTargets();
+    },
+    undefined,
+    (error) => console.error('Error loading model:', error)
+);
+
+function createClickTargets() {
+    const targetGeometry = new THREE.SphereGeometry(0.4); 
+    const targetMaterial = new THREE.MeshBasicMaterial({ visible: false });
+
+    // 사용자가 설정한 원래 좌표값 복구
+    const targets = {
+        'head_target': { position: new THREE.Vector3(0, 1.8, 0), bodyPart: '목' },
+        'shoulder_l_target': { position: new THREE.Vector3(0.8, 1.2, 0), bodyPart: '어깨' },
+        'shoulder_r_target': { position: new THREE.Vector3(-0.8, 1.2, 0), bodyPart: '어깨' },
+        'back_target': { position: new THREE.Vector3(0, 0.5, -0.2), bodyPart: '등' },
+        'arm_l_target': { position: new THREE.Vector3(1.5, 0.2, 0), bodyPart: '팔/손목' },
+        'arm_r_target': { position: new THREE.Vector3(-1.5, 0.2, 0), bodyPart: '팔/손목' },
+        'leg_l_target': { position: new THREE.Vector3(0.5, -1.5, 0), bodyPart: '다리' },
+        'leg_r_target': { position: new THREE.Vector3(-0.5, -1.5, 0), bodyPart: '다리' },
+    };
+
+    for (const [name, { position, bodyPart }] of Object.entries(targets)) {
+        const target = new THREE.Mesh(targetGeometry.clone(), targetMaterial);
+        target.position.copy(position);
+        target.name = name;
+        clickTargets.add(target);
+        bodyPartMapping[name] = bodyPart;
+    }
     
-    bodyPartMapping[name] = category;
-    return mesh;
+    model.add(clickTargets); 
 }
-
-// 신체 부위 조립 (Anatomical Mannequin)
-createPart(new THREE.CapsuleGeometry(0.3, 0.3), 'head', '목', [0, 3.8, 0]); // 머리
-createPart(new THREE.CapsuleGeometry(0.5, 0.8), 'chest', '어깨', [0, 2.8, 0]); // 가슴/어깨
-createPart(new THREE.CapsuleGeometry(0.4, 0.5), 'back', '등', [0, 2.0, 0]); // 허리/등
-createPart(new THREE.CapsuleGeometry(0.15, 0.8), 'arm_l', '팔/손목', [-0.9, 2.6, 0], [0,0,0.2]); // 왼팔
-createPart(new THREE.CapsuleGeometry(0.15, 0.8), 'arm_r', '팔/손목', [0.9, 2.6, 0], [0,0,-0.2]); // 오른팔
-createPart(new THREE.CapsuleGeometry(0.22, 1.2), 'leg_l', '다리', [-0.3, 0.6, 0]); // 왼다리
-createPart(new THREE.CapsuleGeometry(0.22, 1.2), 'leg_r', '다리', [0.3, 0.6, 0]); // 오른다리
-
-scene.add(bodyGroup);
-scene.add(hitboxGroup);
 
 // --- 스트레칭 데이터 ----------------------------------------------------------
 const stretches = [
@@ -106,6 +120,7 @@ function displayStretches(filter = 'all') {
 // --- 레이캐스팅 및 이벤트 ----------------------------------------------------
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
+let hoveredPart = null;
 
 function updateMouse(event) {
     const rect = renderer.domElement.getBoundingClientRect();
@@ -116,33 +131,32 @@ function updateMouse(event) {
 function onMouseMove(event) {
     updateMouse(event);
     raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(hitboxGroup.children);
+    const intersects = raycaster.intersectObjects(clickTargets.children);
 
-    // 마우스 호버 효과
-    bodyGroup.children.forEach(child => child.material = holoMaterial.clone());
     if (intersects.length > 0) {
-        const index = hitboxGroup.children.indexOf(intersects[0].object);
-        bodyGroup.children[index].material = hoverMaterial;
+        const partName = bodyPartMapping[intersects[0].object.name];
+        if (hoveredPart !== partName) {
+            model.traverse(child => { if (child.isMesh) child.material = hoverMaterial; });
+            hoveredPart = partName;
+        }
+    } else if (hoveredPart !== null) {
+        model.traverse(child => { if (child.isMesh) child.material = defaultMaterial; });
+        hoveredPart = null;
     }
 }
 
 function onClick(event) {
     updateMouse(event);
     raycaster.setFromCamera(mouse, camera); 
-    const intersects = raycaster.intersectObjects(hitboxGroup.children);
+    const intersects = raycaster.intersectObjects(clickTargets.children);
 
     if (intersects.length > 0) {
-        const category = bodyPartMapping[intersects[0].object.name];
-        displayStretches(category);
-        controls.autoRotate = false; // 클릭 시 자동 회전 중지
+        const partName = bodyPartMapping[intersects[0].object.name];
+        displayStretches(partName);
     }
 }
 
-document.getElementById('show-all-btn').addEventListener('click', () => {
-    displayStretches('all');
-    controls.autoRotate = true;
-});
-
+document.getElementById('show-all-btn').addEventListener('click', () => displayStretches('all'));
 canvasContainer.addEventListener('mousemove', onMouseMove);
 canvasContainer.addEventListener('click', onClick);
 
