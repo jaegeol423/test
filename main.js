@@ -15,151 +15,165 @@ const stretches = [
 // Scene Setup
 const container = document.getElementById('three-canvas-container');
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setClearColor(0x000000, 0);
 container.appendChild(renderer.domElement);
 
 // Controls
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.autoRotate = true;
-controls.autoRotateSpeed = 1.0;
-controls.minDistance = 5;
-controls.maxDistance = 15;
+controls.autoRotateSpeed = 0.5;
 
-// Fresnel Shader Material (High-End Hologram Look)
-const hologramShader = {
+// Lights
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+const spotLight = new THREE.SpotLight(0x00f2ff, 10);
+spotLight.position.set(5, 10, 5);
+scene.add(spotLight);
+
+// --- Materials ---
+// Fresnel Shader for realistic hologram edge glow
+const hologramMaterial = new THREE.ShaderMaterial({
   uniforms: {
-    "c": { type: "f", value: 1.0 },
-    "p": { type: "f", value: 3.0 },
-    glowColor: { type: "c", value: new THREE.Color(0x00f2ff) },
-    viewVector: { type: "v3", value: camera.position }
+    glowColor: { value: new THREE.Color(0x00f2ff) },
+    viewVector: { value: camera.position },
+    time: { value: 0 }
   },
   vertexShader: `
-    uniform vec3 viewVector;
-    uniform float c;
-    uniform float p;
-    varying float intensity;
+    varying vec3 vNormal;
+    varying vec3 vViewPosition;
     void main() {
-      vec3 vNormal = normalize( normalMatrix * normal );
-      vec3 vNormel = normalize( normalMatrix * viewVector );
-      intensity = pow( c - dot(vNormal, vNormel), p );
-      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+      vNormal = normalize(normalMatrix * normal);
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      vViewPosition = -mvPosition.xyz;
+      gl_Position = projectionMatrix * mvPosition;
     }
   `,
   fragmentShader: `
     uniform vec3 glowColor;
-    varying float intensity;
+    uniform float time;
+    varying vec3 vNormal;
+    varying vec3 vViewPosition;
     void main() {
-      vec3 glow = glowColor * intensity;
-      gl_FragColor = vec4( glow, intensity );
+      float intensity = pow(0.7 - dot(vNormal, normalize(vViewPosition)), 3.0);
+      float scanline = sin(vViewPosition.y * 20.0 + time * 5.0) * 0.1;
+      gl_FragColor = vec4(glowColor, intensity + scanline + 0.15);
     }
-  `
-};
-
-const holoMaterial = new THREE.ShaderMaterial({
-  uniforms: THREE.UniformsUtils.clone(hologramShader.uniforms),
-  vertexShader: hologramShader.vertexShader,
-  fragmentShader: hologramShader.fragmentShader,
-  side: THREE.FrontSide,
-  blending: THREE.AdditiveBlending,
+  `,
   transparent: true,
+  side: THREE.DoubleSide,
+  blending: THREE.AdditiveBlending,
   depthWrite: false
 });
 
-const bodyGroup = new THREE.Group();
+// Solid Hitbox Material (Invisible but clickable)
+const hitboxMaterial = new THREE.MeshBasicMaterial({ 
+  color: 0xff0000, 
+  visible: false // Hidden from view but raycaster can still hit it
+});
 
-function createPart(geo, name, pos, rot = [0, 0, 0], scale = [1, 1, 1]) {
-  const mesh = new THREE.Mesh(geo, holoMaterial.clone());
+const bodyGroup = new THREE.Group();
+const hitboxGroup = new THREE.Group();
+scene.add(bodyGroup);
+scene.add(hitboxGroup);
+
+function createPart(geo, name, pos, rot = [0,0,0], scale = [1,1,1]) {
+  // Visual Hologram Mesh
+  const mesh = new THREE.Mesh(geo, hologramMaterial);
   mesh.position.set(...pos);
   mesh.rotation.set(...rot);
   mesh.scale.set(...scale);
-  mesh.name = name;
   bodyGroup.add(mesh);
+
+  // Invisible Hitbox Mesh
+  const hitbox = new THREE.Mesh(geo, hitboxMaterial);
+  hitbox.position.set(...pos);
+  hitbox.rotation.set(...rot);
+  hitbox.scale.set(...scale);
+  hitbox.name = name; // Important for raycasting
+  hitboxGroup.add(hitbox);
+
   return mesh;
 }
 
-// Muscular Humanoid Proportions
+// --- Anatomical Human Assembly (Heroic Proportions) ---
 // Head & Neck
-createPart(new THREE.SphereGeometry(0.35, 32, 32), 'neck', [0, 3.8, 0]);
-createPart(new THREE.CylinderGeometry(0.12, 0.15, 0.4), 'neck', [0, 3.4, 0]);
+createPart(new THREE.CapsuleGeometry(0.28, 0.25, 8, 24), 'neck', [0, 4.0, 0]); // Head
+createPart(new THREE.CylinderGeometry(0.1, 0.12, 0.4), 'neck', [0, 3.5, 0]); // Neck
 
-// Upper Body (Muscular Chest & Back)
-createPart(new THREE.BoxGeometry(1.0, 1.0, 0.6), 'back', [0, 2.8, 0]); // Chest block
-createPart(new THREE.CapsuleGeometry(0.48, 0.7, 4, 16), 'back', [0, 2.7, 0]); // Thorax
-createPart(new THREE.CapsuleGeometry(0.35, 0.5, 4, 16), 'back', [0, 2.1, 0]); // Abs/Waist
-createPart(new THREE.CapsuleGeometry(0.45, 0.3, 4, 16), 'leg', [0, 1.6, 0]); // Hips
+// Torso (Defined Chest & Waist)
+createPart(new THREE.CapsuleGeometry(0.5, 0.8, 8, 24), 'back', [0, 2.7, 0]); // Chest
+createPart(new THREE.CapsuleGeometry(0.35, 0.6, 8, 24), 'back', [0, 2.1, 0]); // Waist
+createPart(new THREE.CapsuleGeometry(0.48, 0.3, 8, 24), 'leg', [0, 1.5, 0]); // Pelvis
 
-// Arms
+// Arms (Segmented for better silhouette)
+const shoulderX = 0.75;
 const armY = 3.1;
-const armX = 0.75;
-createPart(new THREE.SphereGeometry(0.2, 16, 16), 'shoulder', [-armX, armY, 0]); // Left Shoulder
-createPart(new THREE.SphereGeometry(0.2, 16, 16), 'shoulder', [armX, armY, 0]); // Right Shoulder
+// Shoulders
+createPart(new THREE.SphereGeometry(0.22, 16, 16), 'shoulder', [-shoulderX, armY, 0]);
+createPart(new THREE.SphereGeometry(0.22, 16, 16), 'shoulder', [shoulderX, armY, 0]);
+// Upper Arms (Biceps)
+createPart(new THREE.CapsuleGeometry(0.14, 0.6, 4, 16), 'shoulder', [-0.95, armY-0.5, 0], [0,0,0.2]);
+createPart(new THREE.CapsuleGeometry(0.14, 0.6, 4, 16), 'shoulder', [0.95, armY-0.5, 0], [0,0,-0.2]);
+// Forearms
+createPart(new THREE.CapsuleGeometry(0.12, 0.7, 4, 16), 'wrist', [-1.1, armY-1.2, 0], [0,0,0.1]);
+createPart(new THREE.CapsuleGeometry(0.12, 0.7, 4, 12), 'wrist', [1.1, armY-1.2, 0], [0,0,-0.1]);
 
-createPart(new THREE.CapsuleGeometry(0.15, 0.7, 4, 12), 'shoulder', [-1.0, armY-0.4, 0], [0, 0, 0.1]); // L-Bicep
-createPart(new THREE.CapsuleGeometry(0.15, 0.7, 4, 12), 'shoulder', [1.0, armY-0.4, 0], [0, 0, -0.1]); // R-Bicep
+// Legs (Detailed quads and calves)
+const legX = 0.26;
+// Thighs
+createPart(new THREE.CapsuleGeometry(0.24, 0.9, 4, 16), 'leg', [-legX, 0.9, 0], [0.05, 0, 0]);
+createPart(new THREE.CapsuleGeometry(0.24, 0.9, 4, 16), 'leg', [legX, 0.9, 0], [0.05, 0, 0]);
+// Calves
+createPart(new THREE.CapsuleGeometry(0.18, 1.0, 4, 16), 'leg', [-legX, -0.3, 0]);
+createPart(new THREE.CapsuleGeometry(0.18, 1.0, 4, 16), 'leg', [legX, -0.3, 0]);
 
-createPart(new THREE.CapsuleGeometry(0.12, 0.6, 4, 12), 'wrist', [-1.15, armY-1.2, 0]); // L-Forearm
-createPart(new THREE.CapsuleGeometry(0.12, 0.6, 4, 12), 'wrist', [1.15, armY-1.2, 0]); // R-Forearm
-
-// Legs (Detailed quads)
-const legX = 0.3;
-createPart(new THREE.CapsuleGeometry(0.25, 1.0, 4, 12), 'leg', [-legX, 1.1, 0], [0.1, 0, 0]); // L-Thigh
-createPart(new THREE.CapsuleGeometry(0.25, 1.0, 4, 12), 'leg', [legX, 1.1, 0], [0.1, 0, 0]); // R-Thigh
-createPart(new THREE.CapsuleGeometry(0.2, 0.9, 4, 12), 'leg', [-legX, -0.1, 0]); // L-Calf
-createPart(new THREE.CapsuleGeometry(0.2, 0.9, 4, 12), 'leg', [legX, -0.1, 0]); // R-Calf
-
-scene.add(bodyGroup);
-
-// Environment: Glowing Grid Floor
-const gridHelper = new THREE.GridHelper(10, 20, 0x00f2ff, 0x003333);
-gridHelper.position.y = -0.8;
-scene.add(gridHelper);
-
-// Environment: Ground Ring
-const ringGeo = new THREE.RingGeometry(0.8, 1.0, 32);
-const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
+// --- Environmental FX ---
+// Glowing scanning ring at the feet
+const ringGeo = new THREE.TorusGeometry(1.2, 0.02, 16, 100);
+const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, transparent: true, opacity: 0.5 });
 const ring = new THREE.Mesh(ringGeo, ringMat);
 ring.rotation.x = Math.PI / 2;
-ring.position.y = -0.79;
+ring.position.y = -1.2;
 scene.add(ring);
 
-// Rays / Light Beams
-const beamCount = 5;
-for(let i=0; i<beamCount; i++) {
-  const beamGeo = new THREE.CylinderGeometry(0.01, 0.01, 10, 8);
-  const beamMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, transparent: true, opacity: 0.1 });
-  const beam = new THREE.Mesh(beamGeo, beamMat);
-  beam.position.set((Math.random()-0.5)*4, 4, (Math.random()-0.5)*4);
-  scene.add(beam);
+// Floating UI Dots
+for(let i=0; i<30; i++) {
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.015), new THREE.MeshBasicMaterial({ color: 0x00f2ff }));
+  dot.position.set((Math.random()-0.5)*10, (Math.random())*8-1, (Math.random()-0.5)*10);
+  scene.add(dot);
 }
 
-camera.position.set(0, 2, 8);
+camera.position.set(0, 2, 10);
 
-// Interaction
+// --- Raycasting (Fixed Clicking) ---
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-container.addEventListener('click', (event) => {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+function onClick(event) {
+  // Calculate relative mouse position correctly
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(bodyGroup.children);
+  // We intersect with the HITBOX group, which has solid geometries
+  const intersects = raycaster.intersectObjects(hitboxGroup.children);
 
   if (intersects.length > 0) {
-    const partName = intersects[0].object.name;
-    showStretches(partName);
+    const category = intersects[0].object.name;
+    showStretches(category);
     
-    // Pulse effect
-    const obj = intersects[0].object;
-    obj.material.uniforms.c.value = 2.0;
-    setTimeout(() => obj.material.uniforms.c.value = 1.0, 300);
+    // Brief visual flash on the clicked part
+    const visualPart = bodyGroup.children[hitboxGroup.children.indexOf(intersects[0].object)];
+    visualPart.scale.multiplyScalar(1.1);
+    setTimeout(() => visualPart.scale.divideScalar(1.1), 150);
   }
-});
+}
+
+renderer.domElement.addEventListener('mousedown', onClick);
 
 const infoPanel = document.getElementById('info-panel');
 const stretchContent = document.getElementById('stretch-content');
@@ -168,9 +182,9 @@ const closeBtn = document.getElementById('close-panel');
 function showStretches(category) {
   const filtered = stretches.filter(s => s.category === category);
   stretchContent.innerHTML = `
-    <div style="border-left: 5px solid #00f2ff; padding-left: 20px; margin-bottom: 30px;">
-      <h1 style="color:#00f2ff; margin:0; font-size:2.5rem;">${category.toUpperCase()}</h1>
-      <p style="opacity:0.6;">부위별 스캔 완료. 스트레칭 가이드를 확인하세요.</p>
+    <div style="border-left: 4px solid #00f2ff; padding-left: 15px; margin-bottom: 25px;">
+      <h1 style="color:#00f2ff; font-size:2rem; margin:0;">${category.toUpperCase()} SCAN</h1>
+      <p style="opacity:0.6; font-size:0.9rem;">Targeting anatomical zones...</p>
     </div>
   `;
   
@@ -194,24 +208,29 @@ closeBtn.addEventListener('click', () => {
   controls.autoRotate = true;
 });
 
-// Animation Loop
-function animate() {
+// --- Animation Loop ---
+function animate(time) {
   requestAnimationFrame(animate);
-  controls.update();
   
-  // Update shader uniforms for view vector
-  bodyGroup.children.forEach(mesh => {
-    if (mesh.material.uniforms) {
-      mesh.material.uniforms.viewVector.value = new THREE.Vector3().subVectors(camera.position, mesh.position);
-    }
-  });
+  const t = time * 0.001;
+  hologramMaterial.uniforms.time.value = t;
+  hologramMaterial.uniforms.viewVector.value = camera.position;
 
+  // Floating effect for the groups
+  bodyGroup.position.y = Math.sin(t) * 0.1;
+  hitboxGroup.position.y = bodyGroup.position.y;
+  
+  // Rotating the scanning ring
+  ring.rotation.z += 0.01;
+  ring.scale.setScalar(1 + Math.sin(t * 2) * 0.05);
+
+  controls.update();
   renderer.render(scene, camera);
 }
 
-animate();
+animate(0);
 
-// Resize
+// Resize handling
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -226,8 +245,7 @@ themeToggle.addEventListener('click', () => {
   document.body.setAttribute('data-theme', next);
   themeToggle.textContent = next === 'dark' ? '🌙' : '☀️';
   
-  const color = next === 'dark' ? 0x00f2ff : 0x007bff;
-  bodyGroup.children.forEach(mesh => {
-    if(mesh.material.uniforms) mesh.material.uniforms.glowColor.value.set(color);
-  });
+  const color = next === 'dark' ? 0x00f2ff : 0x0066ff;
+  hologramMaterial.uniforms.glowColor.value.set(color);
+  ring.material.color.set(color);
 });
