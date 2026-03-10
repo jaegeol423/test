@@ -7,15 +7,16 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(50, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 canvasContainer.appendChild(renderer.domElement);
 
-camera.position.set(0, 0, 10); // 카메라 거리를 조금 더 멀리하여 큰 이미지를 담음
+camera.position.set(0, 0, 10);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableRotate = false;
 controls.enablePan = false;
 controls.enableZoom = true;
+controls.update();
 
 const textureLoader = new THREE.TextureLoader();
 const bodyGroup = new THREE.Group();
@@ -23,58 +24,66 @@ const clickTargets = new THREE.Group();
 scene.add(bodyGroup);
 scene.add(clickTargets);
 
-// --- 크로마키 쉐이더 (초록색 배경 제거) -------------------------------------------
-const chromaKeyShader = {
-    uniforms: {
-        texture: { value: null },
-        colorToReplace: { value: new THREE.Color(0x00ff00) }, // 제거할 초록색
-        threshold: { value: 0.4 } // 색상 제거 민감도
+// --- 크로마키 쉐이더 (초록색 배경 제거 최적화) ------------------------------------
+const vertexShader = `
+    varying vec2 vUv;
+    void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+`;
+
+const fragmentShader = `
+    uniform sampler2D map;
+    uniform vec3 keyColor;
+    uniform float similarity;
+    uniform float smoothness;
+    varying vec2 vUv;
+    void main() {
+        vec4 videoColor = texture2D(map, vUv);
+        float d = distance(videoColor.rgb, keyColor);
+        float alpha = smoothstep(similarity, similarity + smoothness, d);
+        gl_FragColor = vec4(videoColor.rgb, videoColor.a * alpha);
+        if(gl_FragColor.a < 0.1) discard;
+    }
+`;
+
+textureLoader.load(
+    'body.png', 
+    (texture) => {
+        console.log('Texture loaded successfully');
+        const aspect = texture.image.width / texture.image.height;
+        const height = 9;
+        const width = height * aspect;
+        
+        const geometry = new THREE.PlaneGeometry(width, height);
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                map: { value: texture },
+                keyColor: { value: new THREE.Color(0x00ff00) }, // 초록색 배경
+                similarity: { value: 0.35 }, // 민감도 조절
+                smoothness: { value: 0.05 }
+            },
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            transparent: true,
+            side: THREE.DoubleSide
+        });
+        
+        const bodyPlane = new THREE.Mesh(geometry, material);
+        bodyGroup.add(bodyPlane);
+
+        createClickTargets();
     },
-    vertexShader: `
-        varying vec2 vUv;
-        void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-    `,
-    fragmentShader: `
-        uniform sampler2D texture;
-        uniform vec3 colorToReplace;
-        uniform float threshold;
-        varying vec2 vUv;
-        void main() {
-            vec4 texColor = texture2D(texture, vUv);
-            float diff = distance(texColor.rgb, colorToReplace);
-            if (diff < threshold) {
-                discard; // 초록색 배경 제거
-            }
-            gl_FragColor = texColor;
-        }
-    `
-};
-
-textureLoader.load('body.png', (texture) => {
-    const aspect = texture.image.width / texture.image.height;
-    const height = 9; // 사진 크기를 6에서 9로 대폭 확대
-    const width = height * aspect;
-    
-    const geometry = new THREE.PlaneGeometry(width, height);
-    const material = new THREE.ShaderMaterial({
-        uniforms: {
-            ...chromaKeyShader.uniforms,
-            texture: { value: texture }
-        },
-        vertexShader: chromaKeyShader.vertexShader,
-        fragmentShader: chromaKeyShader.fragmentShader,
-        transparent: true,
-        side: THREE.DoubleSide
-    });
-    
-    const bodyPlane = new THREE.Mesh(geometry, material);
-    bodyGroup.add(bodyPlane);
-
-    createClickTargets();
-});
+    undefined,
+    (err) => {
+        console.error('Error loading body.png:', err);
+        // 대체 수단: 사진이 안 보이면 빨간 평면이라도 띄워서 경로 문제인지 확인
+        const fallbackGeo = new THREE.PlaneGeometry(4, 8);
+        const fallbackMat = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+        bodyGroup.add(new THREE.Mesh(fallbackGeo, fallbackMat));
+    }
+);
 
 const bodyPartMapping = {}; 
 
@@ -86,7 +95,6 @@ function createClickTargets() {
         visible: true 
     });
 
-    // 사진 크기(height=9)에 맞춘 정밀 좌표 재조정
     const targets = {
         'head': { pos: [0, 3.5, 0.2], size: 0.6, part: '목' },
         'shoulder_l': { pos: [1.1, 2.2, 0.2], size: 0.5, part: '어깨' },
@@ -108,7 +116,7 @@ function createClickTargets() {
     }
 }
 
-// --- 나머지 로직 (데이터 표시, 이벤트 등)은 동일하게 유지 ---------------------------
+// --- 스트레칭 가이드 로직 ------------------------------------------------------
 const stretches = [
     { bodyPart: '목', title: '거북목 스트레칭', description: '턱을 당겨 목 뒤쪽을 늘려주는 느낌으로 15초 유지하세요.' },
     { bodyPart: '어깨', title: '어깨 으쓱하기', description: '양 어깨를 귀 쪽으로 최대한 끌어올렸다가 천천히 내리기를 반복합니다.' },
@@ -174,8 +182,8 @@ canvasContainer.addEventListener('click', onClick);
 function animate(time) {
     requestAnimationFrame(animate);
     if (bodyGroup.children.length > 0) {
-        bodyGroup.position.y = Math.sin(time * 0.002) * 0.15;
-        clickTargets.position.y = bodyGroup.position.y; // 히트박스도 함께 움직임
+        bodyGroup.position.y = Math.sin(time * 0.002) * 0.1;
+        clickTargets.position.y = bodyGroup.position.y;
     }
     controls.update();
     renderer.render(scene, camera);
