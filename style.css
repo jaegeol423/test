@@ -1,153 +1,86 @@
 :root {
-  --hologram-blue: #00f2ff;
-  --hologram-glow: rgba(0, 242, 255, 0.4);
-  --bg-dark: #050505;
-  --panel-bg: rgba(0, 20, 30, 0.85);
-  --text-main: #e0faff;
-  --transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  --bg-color: #f8fafc;
+  --text-color: #1e293b;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --accent-color: #3b82f6;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --transition: 0.3s ease;
 }
 
 body {
   margin: 0;
-  overflow: hidden;
-  background-color: var(--bg-dark);
-  color: var(--text-main);
+  padding: 0;
   font-family: 'Pretendard', sans-serif;
-}
-
-.ui-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  z-index: 10;
-  pointer-events: none;
-}
-
-header {
-  position: absolute;
-  top: 40px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  pointer-events: auto;
-}
-
-.glitch-text {
-  font-size: 3rem;
-  font-weight: 900;
-  color: var(--hologram-blue);
-  text-shadow: 0 0 10px var(--hologram-glow);
-  margin: 0;
-  letter-spacing: 0.2rem;
-}
-
-.subtitle {
-  font-size: 1rem;
-  opacity: 0.7;
-  margin-top: 10px;
-  color: #88e0ff;
-}
-
-#three-canvas-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-#info-panel {
-  position: fixed;
-  top: 10%;
-  right: 40px;
-  width: 400px;
-  max-height: 80vh;
-  background: var(--panel-bg);
-  border: 1px solid var(--hologram-blue);
-  box-shadow: 0 0 20px var(--hologram-glow);
-  border-radius: 8px;
-  padding: 2rem;
-  z-index: 100;
-  pointer-events: auto;
-  overflow-y: auto;
-  transition: transform var(--transition), opacity var(--transition);
-  backdrop-filter: blur(10px);
-}
-
-#info-panel.hidden {
-  transform: translateX(120%);
-  opacity: 0;
-}
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  color: var(--hologram-blue);
-  font-size: 2rem;
-  cursor: pointer;
-}
-
-.stretch-item {
-  margin-bottom: 2rem;
-  border-bottom: 1px solid rgba(0, 242, 255, 0.2);
-  padding-bottom: 1rem;
-}
-
-.stretch-item h2 {
-  color: var(--hologram-blue);
-  margin-top: 0;
-}
-
-.steps {
-  background: rgba(0, 242, 255, 0.1);
-  padding: 1rem;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   line-height: 1.6;
 }
 
-/* Scanline Effect */
-.scanline {
-  width: 100%;
-  height: 100px;
-  z-index: 5;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(0, 242, 255, 0.1) 50%, rgba(0, 0, 0, 0) 100%);
-  opacity: 0.1;
-  position: absolute;
-  bottom: 100%;
-  animation: scanline 6s linear infinite;
+header {
+  padding: 3rem 1rem;
+  text-align: center;
+  background-color: white;
+  border-bottom: 1px solid var(--card-border);
 }
 
-@keyframes scanline {
-  0% { bottom: 100%; }
-  100% { bottom: -100px; }
+h1 {
+  font-size: 2.25rem;
+  margin: 0;
+  color: #0f172a;
 }
 
-.noise {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 6;
-  opacity: 0.03;
-  pointer-events: none;
-  background: url('https://grainy-gradients.vercel.app/noise.svg');
+.subtitle {
+  opacity: 0.7;
+  margin-top: 0.5rem;
 }
 
-.theme-toggle {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--hologram-blue);
-  color: var(--hologram-blue);
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+.controls {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(248, 250, 252, 0.8);
+  backdrop-filter: blur(8px);
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.filter-btn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  border: 1px solid var(--card-border);
+  background: white;
+  color: var(--text-color);
+  font-weight: 600;
   cursor: pointer;
-  z-index: 1000;
-  pointer-events: auto;
+  transition: all var(--transition);
+}
+
+.filter-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.filter-btn.active {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .grid { padding: 1rem; }
+  h1 { font-size: 1.75rem; }
 }

@@ -3,41 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>홀로그램 바디 스트레칭 가이드 Pro</title>
+  <title>바디 스트레칭 가이드</title>
+  <!-- Pretendard Font -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
   <link href='/style.css' rel='stylesheet'>
-  <!-- Three.js CDN with Addons -->
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.162.0/examples/jsm/"
-      }
-    }
-  </script>
 </head>
-<body data-theme="dark">
-  <div class="ui-container">
-    <header>
-      <h1 class="glitch-text" data-text="HOLOGRAPHIC BODY SCANNER">HOLOGRAPHIC BODY SCANNER</h1>
-      <p class="subtitle">정교한 3D 모델을 클릭하거나 드래그하여 탐색하세요</p>
-    </header>
+<body>
+  <header>
+    <h1>바디 스트레칭 가이드</h1>
+    <p class="subtitle">신체 부위를 클릭하여 필요한 스트레칭을 확인하세요</p>
+  </header>
 
-    <div id="three-canvas-container"></div>
+  <nav class="controls">
+    <button class="filter-btn active" data-category="all">전체</button>
+    <button class="filter-btn" data-category="neck">목</button>
+    <button class="filter-btn" data-category="shoulder">어깨</button>
+    <button class="filter-btn" data-category="back">등/허리</button>
+    <button class="filter-btn" data-category="wrist">손목</button>
+    <button class="filter-btn" data-category="leg">다리</button>
+  </nav>
 
-    <aside id="info-panel" class="hidden">
-      <button id="close-panel" class="close-btn">×</button>
-      <div id="stretch-content">
-        <!-- 스트레칭 정보 -->
-      </div>
-    </aside>
+  <main class="grid" id="stretch-grid">
+    <!-- 스트레칭 카드가 여기에 삽입됩니다 -->
+  </main>
 
-    <div class="scanline"></div>
-    <div class="noise"></div>
-  </div>
-
-  <button id="theme-toggle" class="theme-toggle" aria-label="테마 변경">🌙</button>
-
-  <script type="module" src="/main.js"></script>
+  <script defer src="/main.js"></script>
 </body>
 </html>
