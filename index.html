@@ -10,7 +10,7 @@
     <header class="header">
         <div class="logo-area">
             <h1 class="title">MARKET INSIGHT</h1>
-            <p class="subtitle">실시간 글로벌 증시 · 매크로 · 원자재 대시보드</p>
+            <p class="subtitle">실시간 글로벌 증시 · 매크로 · 원자재 (Multi-Interval)</p>
         </div>
         <div class="market-status">
             <span class="status-dot pulse"></span>
@@ -19,17 +19,18 @@
     </header>
 
     <main class="container">
-        <!-- SECTION 1: MARKET CORE (Indices) -->
+        <!-- SECTION 1: MARKET CORE -->
         <section class="dashboard-section">
             <h2 class="section-label">MARKET CORE (핵심 지수)</h2>
             <div class="dashboard-grid main-grid">
-                <div class="chart-card" data-symbol="AMEX:EWY" data-title="KOSPI (EWY)">
+                <div class="chart-card" data-symbol="AMEX:EWY" data-title="KOSPI">
                     <div class="card-header">
                         <h3 class="chart-title">KOSPI (한국)</h3>
                         <div class="interval-selector">
                             <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn" data-int="60">1h</button>
                             <button class="int-btn active" data-int="D">D</button>
-                            <button class="int-btn" data-int="W">W</button>
+                            <button class="int-btn" data-int="M">M</button>
                         </div>
                     </div>
                     <div id="chart_kospi" class="chart-container"></div>
@@ -39,8 +40,9 @@
                         <h3 class="chart-title">S&P 500 (미국)</h3>
                         <div class="interval-selector">
                             <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn" data-int="60">1h</button>
                             <button class="int-btn active" data-int="D">D</button>
-                            <button class="int-btn" data-int="W">W</button>
+                            <button class="int-btn" data-int="M">M</button>
                         </div>
                     </div>
                     <div id="chart_sp500" class="chart-container"></div>
@@ -50,19 +52,21 @@
                         <h3 class="chart-title">NASDAQ 100</h3>
                         <div class="interval-selector">
                             <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn" data-int="60">1h</button>
                             <button class="int-btn active" data-int="D">D</button>
-                            <button class="int-btn" data-int="W">W</button>
+                            <button class="int-btn" data-int="M">M</button>
                         </div>
                     </div>
                     <div id="chart_nasdaq" class="chart-container"></div>
                 </div>
-                <div class="chart-card" data-symbol="NASDAQ:SOXX" data-title="SOX (반도체)">
+                <div class="chart-card" data-symbol="NASDAQ:SOXX" data-title="SOX">
                     <div class="card-header">
-                        <h3 class="chart-title">반도체 지수 (SOX)</h3>
+                        <h3 class="chart-title">반도체 (SOX)</h3>
                         <div class="interval-selector">
                             <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn" data-int="60">1h</button>
                             <button class="int-btn active" data-int="D">D</button>
-                            <button class="int-btn" data-int="W">W</button>
+                            <button class="int-btn" data-int="M">M</button>
                         </div>
                     </div>
                     <div id="chart_sox" class="chart-container"></div>
@@ -72,45 +76,89 @@
 
         <!-- SECTION 2: MACRO & SENTIMENT -->
         <section class="dashboard-section">
-            <h2 class="section-label">MACRO & SENTIMENT (환율 · 금리 · 심리)</h2>
+            <h2 class="section-label">MACRO & SENTIMENT (거시 지표)</h2>
             <div class="dashboard-grid sub-grid">
                 <div class="chart-card mini" data-symbol="FX_IDC:USDKRW" data-title="USD/KRW">
-                    <div class="card-header"><h3 class="chart-title">USD / KRW (환율)</h3></div>
+                    <div class="card-header">
+                        <h3 class="chart-title">환율</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="M">M</button>
+                        </div>
+                    </div>
                     <div id="chart_fx" class="chart-container small"></div>
                 </div>
-                <div class="chart-card mini" data-symbol="TVC:DXY" data-title="DOLLAR INDEX">
-                    <div class="card-header"><h3 class="chart-title">DXY (달러 인덱스)</h3></div>
+                <div class="chart-card mini" data-symbol="TVC:DXY" data-title="DXY">
+                    <div class="card-header">
+                        <h3 class="chart-title">달러 인덱스</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="M">M</button>
+                        </div>
+                    </div>
                     <div id="chart_dxy" class="chart-container small"></div>
                 </div>
-                <div class="chart-card mini" data-symbol="TVC:US10Y" data-title="US 10Y YIELD">
-                    <div class="card-header"><h3 class="chart-title">미국채 10년 금리</h3></div>
+                <div class="chart-card mini" data-symbol="TVC:US10Y" data-title="US10Y">
+                    <div class="card-header">
+                        <h3 class="chart-title">미국채 10년</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="M">M</button>
+                        </div>
+                    </div>
                     <div id="chart_yield" class="chart-container small"></div>
                 </div>
-                <div class="chart-card mini" data-symbol="TVC:VIX" data-title="VIX INDEX">
-                    <div class="card-header"><h3 class="chart-title">VIX (공포 지수)</h3></div>
+                <div class="chart-card mini" data-symbol="TVC:VIX" data-title="VIX">
+                    <div class="card-header">
+                        <h3 class="chart-title">VIX (공포지수)</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="M">M</button>
+                        </div>
+                    </div>
                     <div id="chart_vix" class="chart-container small"></div>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 3: ALTERNATIVE ASSETS -->
+        <!-- SECTION 3: ASSETS -->
         <section class="dashboard-section">
-            <h2 class="section-label">ALTERNATIVE ASSETS (원자재 · 암호화폐)</h2>
+            <h2 class="section-label">ALTERNATIVE ASSETS (자산)</h2>
             <div class="dashboard-grid sub-grid">
                 <div class="chart-card mini" data-symbol="TVC:GOLD" data-title="GOLD">
-                    <div class="card-header"><h3 class="chart-title">GOLD (금)</h3></div>
+                    <div class="card-header">
+                        <h3 class="chart-title">GOLD (금)</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                        </div>
+                    </div>
                     <div id="chart_gold" class="chart-container small"></div>
                 </div>
-                <div class="chart-card mini" data-symbol="TVC:USOIL" data-title="CRUDE OIL">
-                    <div class="card-header"><h3 class="chart-title">원유 (WTI)</h3></div>
+                <div class="chart-card mini" data-symbol="TVC:USOIL" data-title="WTI">
+                    <div class="card-header">
+                        <h3 class="chart-title">원유 (WTI)</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                        </div>
+                    </div>
                     <div id="chart_oil" class="chart-container small"></div>
                 </div>
-                <div class="chart-card mini" data-symbol="BINANCE:BTCUSDT" data-title="BITCOIN">
-                    <div class="card-header"><h3 class="chart-title">비트코인 (BTC)</h3></div>
+                <div class="chart-card mini" data-symbol="BINANCE:BTCUSDT" data-title="BTC">
+                    <div class="card-header">
+                        <h3 class="chart-title">비트코인</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                        </div>
+                    </div>
                     <div id="chart_btc" class="chart-container small"></div>
                 </div>
-                <div class="chart-card mini" data-symbol="BINANCE:ETHUSDT" data-title="ETHEREUM">
-                    <div class="card-header"><h3 class="chart-title">이더리움 (ETH)</h3></div>
+                <div class="chart-card mini" data-symbol="BINANCE:ETHUSDT" data-title="ETH">
+                    <div class="card-header">
+                        <h3 class="chart-title">이더리움</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                        </div>
+                    </div>
                     <div id="chart_eth" class="chart-container small"></div>
                 </div>
             </div>
@@ -118,7 +166,7 @@
     </main>
 
     <footer class="footer">
-        <p>Market Insights Dashboard. Powered by TradingView. MZ Pastel Aesthetic.</p>
+        <p>Professional Market Insight Dashboard. Powered by TradingView.</p>
     </footer>
 
     <script src="main.js"></script>

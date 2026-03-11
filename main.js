@@ -1,5 +1,5 @@
 /**
- * MARKET INSIGHT - Logic & Charts
+ * MARKET INSIGHT - Final Professional Dashboard
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -38,7 +38,7 @@ function checkMarketHours(date) {
 }
 
 /**
- * 모든 차트 가시성을 보장하는 렌더링 함수
+ * 변동률(%)과 모든 심볼 가시성을 보장하는 최신 위젯 렌더링
  */
 function renderChart(containerId, symbol, interval = "D") {
     const container = document.getElementById(containerId);
@@ -47,24 +47,43 @@ function renderChart(containerId, symbol, interval = "D") {
 
     const colors = getPastelColors(containerId);
     
-    // 지수와 거시 지표 가시성을 위해 최적화된 설정
+    // TradingView Symbol Overview 위젯은 가격, 변동률, 멀티 주기를 가장 잘 지원합니다.
     const config = {
-        "symbol": symbol,
+        "symbols": [[symbol, symbol]],
+        "chartOnly": false, // 가격과 변동률을 보여주기 위해 false 설정
         "width": "100%",
         "height": "100%",
         "locale": "ko",
-        "dateRange": interval === "W" ? "12M" : (interval === "5" || interval === "60") ? "1D" : "1M",
         "colorTheme": "dark",
-        "trendLineColor": colors.line,
-        "underLineColor": colors.top,
-        "underLineBottomColor": "rgba(26, 31, 38, 0)",
-        "isTransparent": true,
-        "autosize": true
+        "autosize": true,
+        "showVolume": false,
+        "showMA": false,
+        "hideDateRanges": false,
+        "hideMarketStatus": false,
+        "hideSymbolLogo": false,
+        "scalePosition": "right",
+        "scaleMode": "Normal",
+        "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
+        "fontSize": "10",
+        "noOverlays": false,
+        "valuesTracking": "1",
+        "changeMode": "price-and-percent",
+        "chartType": "area",
+        "maLineColor": colors.line,
+        "maLineWidth": 1,
+        "maLength": 9,
+        "headerFontSize": "medium",
+        "lineWidth": 2,
+        "lineColor": colors.line,
+        "topColor": colors.top,
+        "bottomColor": "rgba(26, 31, 38, 0)",
+        "dateFormat": "yyyy-MM-dd",
+        "timeHoursFormat": "24-point"
     };
 
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
     script.async = true;
     script.innerHTML = JSON.stringify(config);
     
@@ -73,26 +92,20 @@ function renderChart(containerId, symbol, interval = "D") {
 
 function getPastelColors(id) {
     let line = "rgba(165, 180, 252, 1)"; 
-    
     if (id.includes('kospi')) line = "rgba(165, 180, 252, 1)";      
     else if (id.includes('sp500')) line = "rgba(253, 164, 175, 1)"; 
     else if (id.includes('nasdaq')) line = "rgba(153, 246, 228, 1)"; 
     else if (id.includes('sox')) line = "rgba(190, 242, 100, 1)";    
-    
     else if (id.includes('fx')) line = "rgba(190, 242, 100, 1)";     
     else if (id.includes('dxy')) line = "rgba(165, 180, 252, 1)";    
     else if (id.includes('yield')) line = "rgba(253, 164, 175, 1)";  
     else if (id.includes('vix')) line = "rgba(252, 165, 165, 1)";    
-    
     else if (id.includes('gold')) line = "rgba(253, 224, 71, 1)";   
     else if (id.includes('oil')) line = "rgba(251, 146, 60, 1)";    
     else if (id.includes('btc')) line = "rgba(244, 114, 182, 1)";    
     else if (id.includes('eth')) line = "rgba(192, 132, 252, 1)";    
 
-    return {
-        line: line,
-        top: line.replace('1)', '0.3)') 
-    };
+    return { line: line, top: line.replace('1)', '0.3)') };
 }
 
 function initCharts() {
@@ -100,8 +113,7 @@ function initCharts() {
     cards.forEach(card => {
         const containerId = card.querySelector('.chart-container').id;
         const symbol = card.dataset.symbol;
-        const interval = card.querySelector('.int-btn.active')?.dataset.int || "D";
-        renderChart(containerId, symbol, interval);
+        renderChart(containerId, symbol, "D");
     });
 }
 
@@ -117,6 +129,8 @@ function setupIntervalControls() {
             card.querySelectorAll('.int-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
 
+            // 이 위젯은 내부 버튼으로 주기를 조절하는 것이 더 안정적이지만, 
+            // 외부 버튼 클릭 시 해당 심볼을 다시 로드하여 동기화합니다.
             renderChart(containerId, symbol, interval);
         });
     });
