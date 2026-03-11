@@ -1,5 +1,5 @@
 /**
- * KOSPI Market Dashboard - MZ Pastel Edition
+ * MARKET INSIGHT - Logic & Charts (MZ Pastel Edition)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -71,22 +71,28 @@ function renderChart(containerId, symbol, interval = "D") {
 }
 
 function getPastelColors(id) {
+    // Default Lavender Blue
     let line = "#a5b4fc"; 
     
-    // Indices
+    // Section 1: Core
     if (id.includes('kospi')) line = "#a5b4fc";      
     else if (id.includes('sp500')) line = "#fda4af"; 
     else if (id.includes('nasdaq')) line = "#99f6e4"; 
+    else if (id.includes('sox')) line = "#bef264";    // Semi = Mint/Lime
+    else if (id.includes('samsung')) line = "#a5b4fc"; // Samsung = Blue
     else if (id.includes('k200')) line = "#c084fc";   
-    else if (id.includes('fx')) line = "#bef264";     
-    else if (id.includes('yield')) line = "#fca5a5";  
     
-    // Commodities & Crypto
-    else if (id.includes('gold')) line = "#fde047";   // Gold Pastel
-    else if (id.includes('oil')) line = "#fb923c";    // Orange/Oil
-    else if (id.includes('gas')) line = "#38bdf8";    // Sky Blue
-    else if (id.includes('silver')) line = "#e2e8f0"; // Silver Gray
-    else if (id.includes('btc')) line = "#f472b6";    // Pink/Bitcoin
+    // Section 2: Macro
+    else if (id.includes('fx')) line = "#bef264";     
+    else if (id.includes('dxy')) line = "#a5b4fc";    // DXY = Blue
+    else if (id.includes('yield')) line = "#fda4af";  
+    else if (id.includes('vix')) line = "#fca5a5";    // VIX = Rose (Danger)
+    
+    // Section 3: Assets
+    else if (id.includes('gold')) line = "#fde047";   
+    else if (id.includes('oil')) line = "#fb923c";    
+    else if (id.includes('btc')) line = "#f472b6";    
+    else if (id.includes('eth')) line = "#c084fc";    // ETH = Purple
     
     return {
         line: line,
