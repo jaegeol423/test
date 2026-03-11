@@ -38,7 +38,7 @@ function checkMarketHours(date) {
 }
 
 /**
- * 중복 없는 프리미엄 위젯 렌더링 (가시성 100% 보장)
+ * 프리미엄 위젯 렌더링 (W 주기 포함)
  */
 function renderAdvancedPro(containerId, symbol, interval = "D") {
     const container = document.getElementById(containerId);
@@ -47,7 +47,12 @@ function renderAdvancedPro(containerId, symbol, interval = "D") {
 
     const colors = getPastelColors(containerId);
     
-    // 이 방식은 TradingView의 내부 버튼을 숨기고 제가 만든 버튼만 작동하게 합니다.
+    // 주기에 따른 최적의 표시 범위 설정 (가시성 100% 보장)
+    let range = "1D";
+    if (interval === "D") range = "3M";
+    if (interval === "W") range = "24M"; // 주간 차트는 2년치 데이터
+    if (interval === "M") range = "60M"; // 월간 차트는 5년치 데이터
+
     new TradingView.widget({
         "width": "100%",
         "height": "100%",
@@ -55,23 +60,19 @@ function renderAdvancedPro(containerId, symbol, interval = "D") {
         "interval": interval,
         "timezone": "Asia/Seoul",
         "theme": "dark",
-        "style": "3", // Area Style
+        "style": "3", 
         "locale": "ko",
         "toolbar_bg": "#1a1f26",
         "enable_publishing": false,
-        "hide_top_toolbar": true, // 중복 버튼을 제거하기 위해 내부 툴바를 숨김
-        "hide_legend": false, // 상단에 가격과 변동률을 표시하기 위해 활성화
+        "hide_top_toolbar": true, 
+        "hide_legend": false, 
         "save_image": false,
         "container_id": containerId,
         "backgroundColor": "#1a1f26",
         "gridColor": "rgba(45, 55, 72, 0.05)",
         "withdateranges": false,
         "hide_side_toolbar": true,
-        "details": false,
-        "hotlist": false,
-        "calendar": false,
-        // 주기에 따른 데이터 범위 강제 설정 (1D 가시성 문제 해결)
-        "range": interval === "D" ? "3M" : interval === "M" ? "12M" : "1D",
+        "range": range,
         "overrides": {
             "mainSeriesProperties.areaStyle.linecolor": colors.line,
             "mainSeriesProperties.areaStyle.color1": colors.top,
@@ -81,8 +82,8 @@ function renderAdvancedPro(containerId, symbol, interval = "D") {
             "paneProperties.vertGridProperties.color": "rgba(255, 255, 255, 0.02)",
             "paneProperties.horzGridProperties.color": "rgba(255, 255, 255, 0.02)",
             "scalesProperties.textColor": "#a0aec0",
-            "legendProperties.showSeriesOHLC": true, // 실시간 가격 등락 표시
-            "legendProperties.showBarChange": true  // 변동률 % 표시
+            "legendProperties.showSeriesOHLC": true,
+            "legendProperties.showBarChange": true
         }
     });
 }

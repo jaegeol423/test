@@ -12,7 +12,7 @@
     <header class="header">
         <div class="logo-area">
             <h1 class="title">MARKET INSIGHT</h1>
-            <p class="subtitle">Premium Mega Dashboard: 실시간 글로벌 시장 분석</p>
+            <p class="subtitle">Premium Mega Dashboard: 실시간 글로벌 시장 분석 (Multi-Interval)</p>
         </div>
         <div class="market-status">
             <span class="status-dot pulse"></span>
@@ -29,7 +29,9 @@
                     <div class="card-header"><h3 class="chart-title">KOSPI (한국)</h3>
                         <div class="interval-selector">
                             <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn" data-int="60">1h</button>
                             <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="W">W</button>
                             <button class="int-btn" data-int="M">M</button>
                         </div>
                     </div>
@@ -39,7 +41,9 @@
                     <div class="card-header"><h3 class="chart-title">S&P 500 (미국)</h3>
                         <div class="interval-selector">
                             <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn" data-int="60">1h</button>
                             <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="W">W</button>
                             <button class="int-btn" data-int="M">M</button>
                         </div>
                     </div>
@@ -49,7 +53,9 @@
                     <div class="card-header"><h3 class="chart-title">NASDAQ 100</h3>
                         <div class="interval-selector">
                             <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn" data-int="60">1h</button>
                             <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="W">W</button>
                             <button class="int-btn" data-int="M">M</button>
                         </div>
                     </div>
@@ -59,7 +65,9 @@
                     <div class="card-header"><h3 class="chart-title">반도체 (SOX)</h3>
                         <div class="interval-selector">
                             <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn" data-int="60">1h</button>
                             <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="W">W</button>
                             <button class="int-btn" data-int="M">M</button>
                         </div>
                     </div>
@@ -74,25 +82,25 @@
             <div class="dashboard-grid sub-grid">
                 <div class="chart-card mini" data-symbol="AMEX:LIT">
                     <div class="card-header"><h3 class="chart-title">배터리 (LIT)</h3>
-                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button></div>
+                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button><button class="int-btn" data-int="W">W</button><button class="int-btn" data-int="M">M</button></div>
                     </div>
                     <div id="chart_lit" class="chart-container small"></div>
                 </div>
                 <div class="chart-card mini" data-symbol="AMEX:SCHD">
                     <div class="card-header"><h3 class="chart-title">배당주 (SCHD)</h3>
-                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button></div>
+                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button><button class="int-btn" data-int="W">W</button><button class="int-btn" data-int="M">M</button></div>
                     </div>
                     <div id="chart_schd" class="chart-container small"></div>
                 </div>
                 <div class="chart-card mini" data-symbol="FX_IDC:USDKRW">
                     <div class="card-header"><h3 class="chart-title">환율</h3>
-                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button></div>
+                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button><button class="int-btn" data-int="W">W</button><button class="int-btn" data-int="M">M</button></div>
                     </div>
                     <div id="chart_fx" class="chart-container small"></div>
                 </div>
                 <div class="chart-card mini" data-symbol="TVC:GOLD">
                     <div class="card-header"><h3 class="chart-title">GOLD (금)</h3>
-                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button></div>
+                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button><button class="int-btn" data-int="W">W</button><button class="int-btn" data-int="M">M</button></div>
                     </div>
                     <div id="chart_gold" class="chart-container small"></div>
                 </div>
@@ -105,25 +113,25 @@
             <div class="dashboard-grid sub-grid">
                 <div class="chart-card mini" data-symbol="NASDAQ:NVDA">
                     <div class="card-header"><h3 class="chart-title">엔비디아</h3>
-                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button></div>
+                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button><button class="int-btn" data-int="W">W</button><button class="int-btn" data-int="M">M</button></div>
                     </div>
                     <div id="chart_nvda" class="chart-container small"></div>
                 </div>
                 <div class="chart-card mini" data-symbol="NASDAQ:TSLA">
                     <div class="card-header"><h3 class="chart-title">테슬라</h3>
-                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button></div>
+                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button><button class="int-btn" data-int="W">W</button><button class="int-btn" data-int="M">M</button></div>
                     </div>
                     <div id="chart_tsla" class="chart-container small"></div>
                 </div>
                 <div class="chart-card mini" data-symbol="BINANCE:BTCUSDT">
                     <div class="card-header"><h3 class="chart-title">비트코인</h3>
-                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button></div>
+                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button><button class="int-btn" data-int="W">W</button><button class="int-btn" data-int="M">M</button></div>
                     </div>
                     <div id="chart_btc" class="chart-container small"></div>
                 </div>
                 <div class="chart-card mini" data-symbol="BINANCE:ETHUSDT">
                     <div class="card-header"><h3 class="chart-title">이더리움</h3>
-                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button></div>
+                        <div class="interval-selector"><button class="int-btn active" data-int="D">D</button><button class="int-btn" data-int="W">W</button><button class="int-btn" data-int="M">M</button></div>
                     </div>
                     <div id="chart_eth" class="chart-container small"></div>
                 </div>
@@ -132,7 +140,7 @@
     </main>
 
     <footer class="footer">
-        <p>Market Insight Premium. MZ Pastel Aesthetic. All Charts are Real-time.</p>
+        <p>Market Insight Premium. MZ Pastel Aesthetic. Multi-Interval (5m, 1h, D, W, M) Enabled.</p>
     </footer>
 
     <script src="main.js"></script>
