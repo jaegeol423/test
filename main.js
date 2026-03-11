@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initAllCharts();
     setupIntervalControls();
     setupWatchlistControls();
-    setupFooterActions();
 });
 
 // 1. 테마 초기화 및 전환
@@ -33,9 +32,9 @@ function initTheme() {
 // 2. 한국어 뉴스 위젯 (Timeline Widget 활용)
 function initKoreanNewsWidget() {
     const newsContainer = document.getElementById('tradingview-news');
+    if (!newsContainer) return;
     newsContainer.innerHTML = '';
     
-    // TradingView Timeline 위젯은 한국어 경제 뉴스를 가장 잘 지원합니다.
     const script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-timeline.js';
@@ -47,7 +46,7 @@ function initKoreanNewsWidget() {
         "displayMode": "regular",
         "width": "100%",
         "height": "100%",
-        "locale": "ko" // 한국어 설정
+        "locale": "ko"
     });
     newsContainer.appendChild(script);
 }
@@ -69,7 +68,7 @@ function setupWatchlistControls() {
                 btn.classList.remove('active');
             }
         });
-        watchlistSection.classList.toggle('hidden', count === 0);
+        if (watchlistSection) watchlistSection.classList.toggle('hidden', count === 0);
     }
 
     favBtns.forEach(btn => {
@@ -88,7 +87,7 @@ function setupWatchlistControls() {
     updateWatchlistUI();
 }
 
-// 4. 차트 렌더링 최적화
+// 4. 차트 렌더링
 function renderAdvancedPro(containerId, symbol, interval = "D") {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -122,7 +121,7 @@ function renderAdvancedPro(containerId, symbol, interval = "D") {
             "mainSeriesProperties.areaStyle.linewidth": 2,
             "paneProperties.background": themeValue,
             "scalesProperties.textColor": "#a0aec0",
-            "scalesProperties.fontSize": 10, // 폰트 크기 소폭 축소로 겹침 방지
+            "scalesProperties.fontSize": 10,
             "legendProperties.showSeriesOHLC": true,
             "legendProperties.showBarChange": true
         }
@@ -131,6 +130,7 @@ function renderAdvancedPro(containerId, symbol, interval = "D") {
 
 function initClock() {
     const timeDisplay = document.getElementById('market-time');
+    if (!timeDisplay) return;
     setInterval(() => {
         timeDisplay.innerHTML = new Date().toLocaleTimeString('ko-KR');
     }, 1000);
@@ -159,15 +159,11 @@ function setupIntervalControls() {
         btn.addEventListener('click', (e) => {
             const card = e.target.closest('.chart-card');
             const container = card.querySelector('.chart-container');
+            if (!container) return;
             const interval = e.target.dataset.int;
             card.querySelectorAll('.int-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
             renderAdvancedPro(container.id, card.dataset.symbol, interval);
         });
     });
-}
-
-function setupFooterActions() {
-    document.getElementById('export-csv').addEventListener('click', () => alert('CSV 데이터를 준비 중입니다...'));
-    document.getElementById('capture-screen').addEventListener('click', () => window.print());
 }
