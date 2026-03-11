@@ -1,6 +1,5 @@
 /**
- * MARKET INSIGHT - Advanced Mega Dashboard Logic
- * 애플(AAPL)로 튕기는 현상을 방지하고 모든 심볼 가시성을 100% 확보합니다.
+ * MARKET INSIGHT - Alpha Dashboard Logic
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -37,76 +36,80 @@ function checkMarketHours(date) {
     return timeValue >= 900 && timeValue <= 1530;
 }
 
-/**
- * 모든 차트 초기화 (심볼 인식률 극대화 버전)
- */
 function initAllCharts() {
-    const cards = document.querySelectorAll('.chart-card');
-    cards.forEach(card => {
-        const container = card.querySelector('.chart-container');
-        const symbol = card.dataset.symbol;
-        if (container && symbol) {
-            renderAdvancedWidget(container.id, symbol);
-        }
+    const containers = document.querySelectorAll('.chart-container');
+    containers.forEach(container => {
+        const card = container.closest('.chart-card');
+        renderWidget(container.id, card.dataset.symbol);
     });
 }
 
 /**
- * 애플로 튕기지 않도록 심볼을 강제 고정하는 위젯 렌더링
+ * 가시성과 파스텔 감성을 100% 보장하는 위젯 렌더링
  */
-function renderAdvancedWidget(containerId, symbol) {
+function renderWidget(containerId, symbol) {
     const colors = getPastelColors(containerId);
     
-    // 이 설정은 지수(VIX, DXY) 및 개별 주식을 모두 아우르는 가장 안정적인 고급 위젯 방식입니다.
-    new TradingView.widget({
+    const config = {
+        "symbols": [[symbol, symbol]],
+        "chartOnly": false,
         "width": "100%",
         "height": "100%",
-        "symbol": symbol,
-        "interval": "D",
-        "timezone": "Asia/Seoul",
-        "theme": "dark",
-        "style": "3", // Area Style
         "locale": "ko",
-        "toolbar_bg": "#1a1f26",
-        "enable_publishing": false,
-        "hide_top_toolbar": true,
-        "hide_legend": false,
-        "save_image": false,
-        "container_id": containerId,
-        "backgroundColor": "#1a1f26",
-        "gridColor": "rgba(255, 255, 255, 0.03)",
-        "withdateranges": true,
-        "hide_side_toolbar": true,
-        "overrides": {
-            "mainSeriesProperties.areaStyle.linecolor": colors.line,
-            "mainSeriesProperties.areaStyle.color1": colors.top,
-            "mainSeriesProperties.areaStyle.color2": "rgba(26, 31, 38, 0)",
-            "mainSeriesProperties.areaStyle.linewidth": 3,
-            "paneProperties.background": "#1a1f26",
-            "paneProperties.vertGridProperties.color": "rgba(255, 255, 255, 0.02)",
-            "paneProperties.horzGridProperties.color": "rgba(255, 255, 255, 0.02)",
-            "scalesProperties.textColor": "#a0aec0",
-            "legendProperties.showSeriesOHLC": true,
-            "legendProperties.showSeriesTitle": true
-        }
-    });
+        "colorTheme": "dark",
+        "autosize": true,
+        "showVolume": false,
+        "showMA": false,
+        "hideDateRanges": false,
+        "hideMarketStatus": false,
+        "hideSymbolLogo": false,
+        "scalePosition": "right",
+        "scaleMode": "Normal",
+        "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
+        "fontSize": "10",
+        "noOverlays": false,
+        "valuesTracking": "1",
+        "changeMode": "price-and-percent",
+        "chartType": "area",
+        "lineWidth": 2,
+        "lineColor": colors.line,
+        "topColor": colors.top,
+        "bottomColor": "rgba(26, 31, 38, 0)",
+        "dateFormat": "yyyy-MM-dd",
+        "timeHoursFormat": "24-point",
+        "range": "1M" // 기본 범위를 1개월로 설정하여 선 가시성 확보
+    };
+
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
+    script.async = true;
+    script.innerHTML = JSON.stringify(config);
+    
+    const container = document.getElementById(containerId);
+    if (container) container.appendChild(script);
 }
 
 function getPastelColors(id) {
-    let line = "rgba(165, 180, 252, 1)"; 
+    let line = "rgba(165, 180, 252, 1)"; // Lavender
     
     if (id.includes('kospi')) line = "rgba(165, 180, 252, 1)";      
     else if (id.includes('sp500')) line = "rgba(253, 164, 175, 1)"; 
     else if (id.includes('nasdaq')) line = "rgba(153, 246, 228, 1)"; 
+    else if (id.includes('nikkei')) line = "rgba(165, 180, 252, 1)";
+    else if (id.includes('dax')) line = "rgba(192, 132, 252, 1)";
+    else if (id.includes('hsi')) line = "rgba(253, 164, 175, 1)";
+    
     else if (id.includes('sox')) line = "rgba(190, 242, 100, 1)";    
-    else if (id.includes('fx')) line = "rgba(190, 242, 100, 1)";     
-    else if (id.includes('dxy')) line = "rgba(165, 180, 252, 1)";    
-    else if (id.includes('yield')) line = "rgba(253, 164, 175, 1)";  
-    else if (id.includes('vix')) line = "rgba(252, 165, 165, 1)";    
+    else if (id.includes('lit')) line = "rgba(153, 246, 228, 1)";
+    else if (id.includes('schd')) line = "rgba(165, 180, 252, 1)";
+    else if (id.includes('xlk')) line = "rgba(192, 132, 252, 1)";
+    
     else if (id.includes('gold')) line = "rgba(253, 224, 71, 1)";   
     else if (id.includes('silver')) line = "rgba(226, 232, 240, 1)";
     else if (id.includes('oil')) line = "rgba(251, 146, 60, 1)";    
-    else if (id.includes('gas')) line = "rgba(56, 189, 248, 1)";
+    else if (id.includes('fx')) line = "rgba(190, 242, 100, 1)";     
+    
     else if (id.includes('nvda')) line = "rgba(153, 246, 228, 1)";
     else if (id.includes('tsla')) line = "rgba(252, 165, 165, 1)";
     else if (id.includes('btc')) line = "rgba(244, 114, 182, 1)";    

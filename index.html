@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MARKET INSIGHT - Mega Dashboard</title>
+    <title>MARKET INSIGHT - Alpha Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <!-- TradingView 라이브러리 로드 -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 </head>
 <body>
     <header class="header">
         <div class="logo-area">
             <h1 class="title">MARKET INSIGHT</h1>
-            <p class="subtitle">글로벌 지수 · 매크로 · 원자재 · 주도주 (Mega Dashboard)</p>
+            <p class="subtitle">글로벌 국가 지수 · 핵심 섹터 테마 · 주요 자산 대시보드</p>
         </div>
         <div class="market-status">
             <span class="status-dot pulse"></span>
@@ -21,42 +20,44 @@
     </header>
 
     <main class="container">
-        <!-- SECTION 1: GLOBAL MARKET (지수) -->
+        <!-- SECTION 1: GLOBAL MARKET -->
         <section class="dashboard-section">
-            <h2 class="section-label">GLOBAL MARKET</h2>
+            <h2 class="section-label">GLOBAL MARKET (주요 국가 지수)</h2>
             <div class="dashboard-grid main-grid">
                 <div class="chart-card" data-symbol="AMEX:EWY"><h3 class="chart-title">KOSPI (한국)</h3><div id="chart_kospi" class="chart-container"></div></div>
                 <div class="chart-card" data-symbol="AMEX:SPY"><h3 class="chart-title">S&P 500 (미국)</h3><div id="chart_sp500" class="chart-container"></div></div>
                 <div class="chart-card" data-symbol="NASDAQ:QQQ"><h3 class="chart-title">NASDAQ 100</h3><div id="chart_nasdaq" class="chart-container"></div></div>
-                <div class="chart-card" data-symbol="NASDAQ:SOXX"><h3 class="chart-title">반도체 (SOX)</h3><div id="chart_sox" class="chart-container"></div></div>
+                <div class="chart-card" data-symbol="TVC:NI225"><h3 class="chart-title">NIKKEI 225 (일본)</h3><div id="chart_nikkei" class="chart-container"></div></div>
+                <div class="chart-card" data-symbol="XETR:DAX"><h3 class="chart-title">DAX (독일)</h3><div id="chart_dax" class="chart-container"></div></div>
+                <div class="chart-card" data-symbol="HSI:HSI"><h3 class="chart-title">HANG SENG (홍콩)</h3><div id="chart_hsi" class="chart-container"></div></div>
             </div>
         </section>
 
-        <!-- SECTION 2: MACRO & FX (거시 지표 - 애플로 안 튕기게 심볼 고정) -->
+        <!-- SECTION 2: THEME & SECTOR -->
         <section class="dashboard-section">
-            <h2 class="section-label">MACRO & FX</h2>
+            <h2 class="section-label">THEME & SECTOR (섹터 테마 ETF)</h2>
             <div class="dashboard-grid sub-grid">
-                <div class="chart-card mini" data-symbol="FX_IDC:USDKRW"><h3 class="chart-title">원/달러 환율</h3><div id="chart_fx" class="chart-container small"></div></div>
-                <div class="chart-card mini" data-symbol="TVC:DXY"><h3 class="chart-title">달러 인덱스 (DXY)</h3><div id="chart_dxy" class="chart-container small"></div></div>
-                <div class="chart-card mini" data-symbol="TVC:US10Y"><h3 class="chart-title">미국채 10년 금리</h3><div id="chart_yield" class="chart-container small"></div></div>
-                <div class="chart-card mini" data-symbol="TVC:VIX"><h3 class="chart-title">VIX (공포지수)</h3><div id="chart_vix" class="chart-container small"></div></div>
+                <div class="chart-card mini" data-symbol="NASDAQ:SOXX"><h3 class="chart-title">반도체 (SOX)</h3><div id="chart_sox" class="chart-container small"></div></div>
+                <div class="chart-card mini" data-symbol="AMEX:LIT"><h3 class="chart-title">배터리 (리튬)</h3><div id="chart_lit" class="chart-container small"></div></div>
+                <div class="chart-card mini" data-symbol="AMEX:SCHD"><h3 class="chart-title">미국 우량배당</h3><div id="chart_schd" class="chart-container small"></div></div>
+                <div class="chart-card mini" data-symbol="AMEX:XLK"><h3 class="chart-title">미국 IT 빅테크</h3><div id="chart_xlk" class="chart-container small"></div></div>
             </div>
         </section>
 
-        <!-- SECTION 3: COMMODITIES (원자재) -->
+        <!-- SECTION 3: CORE ASSETS -->
         <section class="dashboard-section">
-            <h2 class="section-label">COMMODITIES</h2>
+            <h2 class="section-label">CORE ASSETS (주요 자산 및 환율)</h2>
             <div class="dashboard-grid sub-grid">
                 <div class="chart-card mini" data-symbol="TVC:GOLD"><h3 class="chart-title">GOLD (금)</h3><div id="chart_gold" class="chart-container small"></div></div>
                 <div class="chart-card mini" data-symbol="TVC:SILVER"><h3 class="chart-title">SILVER (은)</h3><div id="chart_silver" class="chart-container small"></div></div>
                 <div class="chart-card mini" data-symbol="TVC:USOIL"><h3 class="chart-title">WTI (원유)</h3><div id="chart_oil" class="chart-container small"></div></div>
-                <div class="chart-card mini" data-symbol="TVC:NATURALGAS"><h3 class="chart-title">천연가스</h3><div id="chart_gas" class="chart-container small"></div></div>
+                <div class="chart-card mini" data-symbol="FX_IDC:USDKRW"><h3 class="chart-title">원/달러 환율</h3><div id="chart_fx" class="chart-container small"></div></div>
             </div>
         </section>
 
-        <!-- SECTION 4: TECH & CRYPTO (주도주 및 코인) -->
+        <!-- SECTION 4: LEADERS & CRYPTO -->
         <section class="dashboard-section">
-            <h2 class="section-label">TECH & CRYPTO</h2>
+            <h2 class="section-label">LEADERS & CRYPTO</h2>
             <div class="dashboard-grid sub-grid">
                 <div class="chart-card mini" data-symbol="NASDAQ:NVDA"><h3 class="chart-title">엔비디아 (NVDA)</h3><div id="chart_nvda" class="chart-container small"></div></div>
                 <div class="chart-card mini" data-symbol="NASDAQ:TSLA"><h3 class="chart-title">테슬라 (TSLA)</h3><div id="chart_tsla" class="chart-container small"></div></div>
@@ -67,7 +68,7 @@
     </main>
 
     <footer class="footer">
-        <p>Market Insight Professional Dashboard. Powered by TradingView. MZ Pastel Aesthetic.</p>
+        <p>Professional Alpha Dashboard. Powered by TradingView. MZ Pastel Aesthetic.</p>
     </footer>
 
     <script src="main.js"></script>
