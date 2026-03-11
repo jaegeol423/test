@@ -13,13 +13,24 @@
     </header>
 
     <main class="generator-section">
+        <div class="user-info">
+            <label for="birthdate">생년월일을 입력하고 사주 맞춤 번호를 받으세요</label>
+            <div class="input-group">
+                <input type="date" id="birthdate" class="birth-input">
+            </div>
+        </div>
+
+        <div id="saju-result" class="saju-result" style="display: none;">
+            <!-- 사주 분석 결과가 여기에 표시됩니다 -->
+        </div>
+
         <div id="lotto-display" class="lotto-display">
             <!-- 추첨된 번호 공들이 여기에 추가됩니다. -->
             <div class="placeholder-text">행운의 버튼을 눌러주세요</div>
         </div>
 
         <div class="controls">
-            <button id="generate-btn" class="main-btn">번호 추첨하기</button>
+            <button id="generate-btn" class="main-btn">사주 맞춤 번호 추첨</button>
         </div>
     </main>
 

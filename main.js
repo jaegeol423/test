@@ -1,10 +1,45 @@
 const lottoDisplay = document.getElementById('lotto-display');
 const generateBtn = document.getElementById('generate-btn');
 const historyContainer = document.getElementById('history-container');
+const birthInput = document.getElementById('birthdate');
+const sajuResult = document.getElementById('saju-result');
 
-// --- 로또 번호 생성 로직 -----------------------------------------------------
-function generateLottoNumbers() {
+// --- 사주 및 오행 데이터 -----------------------------------------------------
+const elements = {
+    wood: { name: '목(木)', color: '초록', range: [1, 10, 41, 45], desc: '성장과 활력을 상징하는 목의 기운이 강합니다. 생명력이 느껴지는 낮은 번호대와 끝 번호대가 행운을 가져다줄 것입니다.' },
+    fire: { name: '화(火)', color: '빨강', range: [21, 30], desc: '열정과 에너지를 상징하는 화의 기운이 가득합니다. 뜨거운 기운을 품은 20번대 중반 번호들에 주목하세요.' },
+    earth: { name: '토(土)', color: '노랑/회색', range: [1, 5, 31, 40], desc: '안정과 신뢰를 상징하는 토의 기운이 깃들어 있습니다. 단단한 기반을 의미하는 30번대 번호들이 길운을 보충해줍니다.' },
+    metal: { name: '금(金)', color: '흰색/금색', range: [41, 45, 11, 20], desc: '결단력과 명예를 상징하는 금의 기운이 느껴집니다. 날카롭고 명확한 기운의 10번대와 최고령 번호들이 유리합니다.' },
+    water: { name: '수(水)', color: '파랑', range: [11, 20], desc: '지혜와 흐름을 상징하는 수의 기운이 흐릅니다. 유연함을 가진 10번대 파란 공들이 당신의 행운 번호입니다.' }
+};
+
+function analyzeSaju(birthdate) {
+    if (!birthdate) return null;
+    const date = new Date(birthdate);
+    const sum = date.getFullYear() + (date.getMonth() + 1) + date.getDate();
+    const elementKeys = Object.keys(elements);
+    const key = elementKeys[sum % elementKeys.length];
+    return elements[key];
+}
+
+// --- 로또 번호 생성 로직 (사주 가중치 포함) ---------------------------------------
+function generateLottoNumbers(saju) {
     const numbers = [];
+    const luckyRange = saju ? saju.range : [];
+    
+    // 사주 맞춤 번호 2개 우선 선정 (가중치)
+    if (luckyRange.length > 0) {
+        while (numbers.length < 2) {
+            const min = luckyRange[0];
+            const max = luckyRange[luckyRange.length - 1];
+            const num = Math.floor(Math.random() * (max - min + 1)) + min;
+            if (!numbers.includes(num) && num >= 1 && num <= 45) {
+                numbers.push(num);
+            }
+        }
+    }
+
+    // 나머지 번호 랜덤 채우기
     while (numbers.length < 6) {
         const num = Math.floor(Math.random() * 45) + 1;
         if (!numbers.includes(num)) {
@@ -33,10 +68,24 @@ function createBallElement(num, isSmall = false) {
 
 // --- 번호 추첨 실행 ----------------------------------------------------------
 async function drawNumbers() {
+    const birthdate = birthInput.value;
+    const saju = analyzeSaju(birthdate);
+
     generateBtn.disabled = true;
     lottoDisplay.innerHTML = '';
     
-    const luckyNumbers = generateLottoNumbers();
+    // 사주 결과 표시
+    if (saju) {
+        sajuResult.style.display = 'block';
+        sajuResult.innerHTML = `
+            <p class="saju-title">✨ 당신의 사주 분석: ${saju.name}의 기운</p>
+            <p class="saju-desc">${saju.desc}</p>
+        `;
+    } else {
+        sajuResult.style.display = 'none';
+    }
+    
+    const luckyNumbers = generateLottoNumbers(saju);
     
     // 순차적으로 공 나타내기 애니메이션
     for (let i = 0; i < luckyNumbers.length; i++) {
@@ -45,20 +94,19 @@ async function drawNumbers() {
         lottoDisplay.appendChild(ball);
     }
     
-    saveToHistory(luckyNumbers);
+    saveToHistory(luckyNumbers, saju ? saju.name : '일반');
     generateBtn.disabled = false;
 }
 
 // --- 히스토리 관리 -----------------------------------------------------------
-function saveToHistory(numbers) {
+function saveToHistory(numbers, type) {
     const history = JSON.parse(localStorage.getItem('lottoHistory') || '[]');
     const now = new Date();
-    const dateStr = `${now.getFullYear()}.${now.getMonth() + 1}.${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const dateStr = `${now.getMonth() + 1}.${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
     
-    const newEntry = { date: dateStr, numbers: numbers };
+    const newEntry = { date: dateStr, numbers: numbers, type: type };
     history.unshift(newEntry);
     
-    // 최근 10개만 유지
     const updatedHistory = history.slice(0, 10);
     localStorage.setItem('lottoHistory', JSON.stringify(updatedHistory));
     
@@ -80,9 +128,11 @@ function renderHistory() {
         const historyItem = document.createElement('div');
         historyItem.className = 'history-item';
         
-        const dateSpan = document.createElement('span');
-        dateSpan.className = 'history-date';
-        dateSpan.textContent = item.date;
+        const infoDiv = document.createElement('div');
+        infoDiv.innerHTML = `
+            <div class="history-date">${item.date}</div>
+            <div style="font-size: 0.75rem; color: var(--primary-color-start); margin-top: 4px;">[${item.type}]</div>
+        `;
         
         const ballsDiv = document.createElement('div');
         ballsDiv.className = 'history-balls';
@@ -91,7 +141,7 @@ function renderHistory() {
             ballsDiv.appendChild(createBallElement(num, true));
         });
         
-        historyItem.appendChild(dateSpan);
+        historyItem.appendChild(infoDiv);
         historyItem.appendChild(ballsDiv);
         historyContainer.appendChild(historyItem);
     });
