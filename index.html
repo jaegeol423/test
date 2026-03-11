@@ -7,11 +7,13 @@
     <link rel="stylesheet" href="style.css">
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 </head>
-<body class="pastel-dark">
+<body class="pastel-dark sidebar-open">
     <header class="header">
-        <div class="logo-area">
-            <h1 class="title">MARKET INSIGHT <span class="pro-badge">PRO</span></h1>
-            <p class="subtitle">개인 맞춤형 글로벌 투자 대시보드</p>
+        <div class="header-left">
+            <button id="news-toggle-btn" class="icon-btn" title="뉴스 피드 토글">📰 뉴스</button>
+            <div class="logo-area">
+                <h1 class="title">MARKET INSIGHT <span class="pro-badge">PRO</span></h1>
+            </div>
         </div>
         <div class="header-controls">
             <div class="theme-toggle">
@@ -25,23 +27,23 @@
     </header>
 
     <div class="main-layout">
-        <aside class="sidebar news-sidebar">
-            <h2 class="sidebar-label">REAL-TIME NEWS</h2>
+        <aside id="sidebar" class="sidebar news-sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-label">실시간 경제 뉴스</h2>
+            </div>
             <div id="tradingview-news" class="news-container">
-                <!-- TradingView News Widget will be injected here -->
+                <!-- TradingView News Widget -->
             </div>
         </aside>
 
         <main class="content-area container">
-            <!-- SECTION 0: MY WATCHLIST (찜한 종목만 모이는 곳) -->
+            <!-- SECTION 0: MY WATCHLIST -->
             <section id="watchlist-section" class="dashboard-section hidden">
                 <h2 class="section-label">★ MY WATCHLIST</h2>
-                <div id="watchlist-grid" class="dashboard-grid main-grid">
-                    <!-- Starred charts will appear here -->
-                </div>
+                <div id="watchlist-grid" class="dashboard-grid main-grid"></div>
             </section>
 
-            <!-- SECTION 1: GLOBAL INDICES -->
+            <!-- SECTION 1: GLOBAL MARKET -->
             <section class="dashboard-section">
                 <h2 class="section-label">GLOBAL MARKET</h2>
                 <div class="dashboard-grid main-grid">
@@ -49,7 +51,7 @@
                         <div class="card-header">
                             <h3 class="chart-title">KOSPI (한국)</h3>
                             <div class="card-actions">
-                                <button class="fav-btn" title="즐겨찾기">★</button>
+                                <button class="fav-btn">★</button>
                                 <div class="interval-selector">
                                     <button class="int-btn" data-int="60">1h</button>
                                     <button class="int-btn active" data-int="D">D</button>
@@ -63,7 +65,7 @@
                         <div class="card-header">
                             <h3 class="chart-title">S&P 500 (미국)</h3>
                             <div class="card-actions">
-                                <button class="fav-btn" title="즐겨찾기">★</button>
+                                <button class="fav-btn">★</button>
                                 <div class="interval-selector">
                                     <button class="int-btn" data-int="60">1h</button>
                                     <button class="int-btn active" data-int="D">D</button>
@@ -77,7 +79,7 @@
                         <div class="card-header">
                             <h3 class="chart-title">NASDAQ 100</h3>
                             <div class="card-actions">
-                                <button class="fav-btn" title="즐겨찾기">★</button>
+                                <button class="fav-btn">★</button>
                                 <div class="interval-selector">
                                     <button class="int-btn" data-int="60">1h</button>
                                     <button class="int-btn active" data-int="D">D</button>
@@ -91,7 +93,7 @@
                         <div class="card-header">
                             <h3 class="chart-title">반도체 (SOX)</h3>
                             <div class="card-actions">
-                                <button class="fav-btn" title="즐겨찾기">★</button>
+                                <button class="fav-btn">★</button>
                                 <div class="interval-selector">
                                     <button class="int-btn" data-int="60">1h</button>
                                     <button class="int-btn active" data-int="D">D</button>
@@ -104,7 +106,7 @@
                 </div>
             </section>
 
-            <!-- SECTION 2: SECTORS & ASSETS -->
+            <!-- SECTION 2: CORE ASSETS -->
             <section class="dashboard-section">
                 <h2 class="section-label">SECTORS & CORE ASSETS</h2>
                 <div class="dashboard-grid sub-grid">
@@ -132,19 +134,6 @@
     <footer class="footer">
         <p>Market Insight Pro © 2026. MZ Pastel Aesthetic. Powered by TradingView.</p>
     </footer>
-
-    <!-- 알림 설정 모달 -->
-    <div id="alert-modal" class="modal">
-        <div class="modal-content">
-            <h3>가격 알림 설정</h3>
-            <p>설정한 가격에 도달하면 브라우저 알림을 보냅니다.</p>
-            <input type="number" id="alert-price" placeholder="목표 가격 입력">
-            <div class="modal-btns">
-                <button id="save-alert">저장</button>
-                <button id="close-modal">취소</button>
-            </div>
-        </div>
-    </div>
 
     <script src="main.js"></script>
 </body>

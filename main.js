@@ -4,32 +4,56 @@
 
 let starredAssets = JSON.parse(localStorage.getItem('starredAssets')) || [];
 let currentTheme = localStorage.getItem('theme') || 'pastel-dark';
+let isSidebarOpen = localStorage.getItem('sidebarOpen') !== 'false'; // 기본값 열림
 
 document.addEventListener('DOMContentLoaded', () => {
     initClock();
     initTheme();
-    initKoreanNewsWidget(); // 한국어 뉴스 피드로 교체
+    initSidebar(); // 사이드바 토글 로직 추가
+    initKoreanNewsWidget();
     initAllCharts();
     setupIntervalControls();
     setupWatchlistControls();
 });
 
-// 1. 테마 초기화 및 전환
+// 사이드바 토글 및 상태 유지
+function initSidebar() {
+    const body = document.body;
+    const toggleBtn = document.getElementById('news-toggle-btn');
+    
+    // 초기 상태 설정
+    if (!isSidebarOpen) {
+        body.classList.add('sidebar-closed');
+        body.classList.remove('sidebar-open');
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        isSidebarOpen = !isSidebarOpen;
+        body.classList.toggle('sidebar-closed');
+        body.classList.toggle('sidebar-open');
+        localStorage.setItem('sidebarOpen', isSidebarOpen);
+        
+        // 사이드바 전환 시 차트 크기 재조정을 위해 약간의 지연 후 윈도우 리사이즈 이벤트 발생
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 400);
+    });
+}
+
 function initTheme() {
-    document.body.className = currentTheme;
+    document.body.className = isSidebarOpen ? `${currentTheme} sidebar-open` : `${currentTheme} sidebar-closed`;
     const themeBtn = document.getElementById('theme-btn');
     themeBtn.innerHTML = currentTheme === 'pastel-dark' ? '🌙' : '🌑';
     
     themeBtn.addEventListener('click', () => {
         currentTheme = currentTheme === 'pastel-dark' ? 'pure-dark' : 'pastel-dark';
-        document.body.className = currentTheme;
+        document.body.className = isSidebarOpen ? `${currentTheme} sidebar-open` : `${currentTheme} sidebar-closed`;
         themeBtn.innerHTML = currentTheme === 'pastel-dark' ? '🌙' : '🌑';
         localStorage.setItem('theme', currentTheme);
         initAllCharts();
     });
 }
 
-// 2. 한국어 뉴스 위젯 (Timeline Widget 활용)
 function initKoreanNewsWidget() {
     const newsContainer = document.getElementById('tradingview-news');
     if (!newsContainer) return;
@@ -51,7 +75,6 @@ function initKoreanNewsWidget() {
     newsContainer.appendChild(script);
 }
 
-// 3. 즐겨찾기 로직
 function setupWatchlistControls() {
     const favBtns = document.querySelectorAll('.fav-btn');
     const watchlistSection = document.getElementById('watchlist-section');
@@ -87,7 +110,6 @@ function setupWatchlistControls() {
     updateWatchlistUI();
 }
 
-// 4. 차트 렌더링
 function renderAdvancedPro(containerId, symbol, interval = "D") {
     const container = document.getElementById(containerId);
     if (!container) return;
