@@ -1,5 +1,5 @@
 /**
- * MARKET INSIGHT - Final Professional Dashboard
+ * MARKET INSIGHT - Logic & Charts (Optimized Range)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -38,7 +38,7 @@ function checkMarketHours(date) {
 }
 
 /**
- * 변동률(%)과 모든 심볼 가시성을 보장하는 최신 위젯 렌더링
+ * 차트 렌더링 함수 - 범위(Range) 설정 최적화
  */
 function renderChart(containerId, symbol, interval = "D") {
     const container = document.getElementById(containerId);
@@ -47,10 +47,14 @@ function renderChart(containerId, symbol, interval = "D") {
 
     const colors = getPastelColors(containerId);
     
-    // TradingView Symbol Overview 위젯은 가격, 변동률, 멀티 주기를 가장 잘 지원합니다.
+    // 버튼 주기(Interval)에 따른 최적의 표시 범위(Range) 매핑
+    let displayRange = "1M"; // 기본값 (D 선택 시 1개월치 데이터)
+    if (interval === "5" || interval === "60") displayRange = "1D"; // 분봉/시간봉은 당일치
+    if (interval === "M") displayRange = "12M"; // 월간은 1년치
+
     const config = {
         "symbols": [[symbol, symbol]],
-        "chartOnly": false, // 가격과 변동률을 보여주기 위해 false 설정
+        "chartOnly": false,
         "width": "100%",
         "height": "100%",
         "locale": "ko",
@@ -78,7 +82,8 @@ function renderChart(containerId, symbol, interval = "D") {
         "topColor": colors.top,
         "bottomColor": "rgba(26, 31, 38, 0)",
         "dateFormat": "yyyy-MM-dd",
-        "timeHoursFormat": "24-point"
+        "timeHoursFormat": "24-point",
+        "range": displayRange // 핵심: 이 속성이 범위를 결정합니다.
     };
 
     const script = document.createElement('script');
@@ -113,7 +118,8 @@ function initCharts() {
     cards.forEach(card => {
         const containerId = card.querySelector('.chart-container').id;
         const symbol = card.dataset.symbol;
-        renderChart(containerId, symbol, "D");
+        const interval = card.querySelector('.int-btn.active')?.dataset.int || "D";
+        renderChart(containerId, symbol, interval);
     });
 }
 
@@ -129,8 +135,6 @@ function setupIntervalControls() {
             card.querySelectorAll('.int-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
 
-            // 이 위젯은 내부 버튼으로 주기를 조절하는 것이 더 안정적이지만, 
-            // 외부 버튼 클릭 시 해당 심볼을 다시 로드하여 동기화합니다.
             renderChart(containerId, symbol, interval);
         });
     });
