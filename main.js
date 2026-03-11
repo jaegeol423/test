@@ -38,7 +38,7 @@ function checkMarketHours(date) {
 }
 
 /**
- * 프리미엄 위젯 렌더링 (W 주기 포함)
+ * 프리미엄 위젯 렌더링 (1h, D, W, M)
  */
 function renderAdvancedPro(containerId, symbol, interval = "D") {
     const container = document.getElementById(containerId);
@@ -47,11 +47,11 @@ function renderAdvancedPro(containerId, symbol, interval = "D") {
 
     const colors = getPastelColors(containerId);
     
-    // 주기에 따른 최적의 표시 범위 설정 (가시성 100% 보장)
-    let range = "1D";
+    // 주기에 따른 최적의 표시 범위 설정
+    let range = "1D"; // 1시간봉은 당일치
     if (interval === "D") range = "3M";
-    if (interval === "W") range = "24M"; // 주간 차트는 2년치 데이터
-    if (interval === "M") range = "60M"; // 월간 차트는 5년치 데이터
+    if (interval === "W") range = "24M";
+    if (interval === "M") range = "60M";
 
     new TradingView.widget({
         "width": "100%",
