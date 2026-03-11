@@ -1,5 +1,6 @@
 /**
- * MARKET INSIGHT - Professional MZ Pastel Dashboard
+ * MARKET INSIGHT - Final MZ Pastel Dashboard
+ * 확실한 가시성과 파스텔 감성을 보장합니다.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -38,73 +39,67 @@ function checkMarketHours(date) {
 }
 
 /**
- * 전역 차트 생성 함수 (Advanced Widget 활용)
+ * 미니 위젯 스크립트 주입 방식 (색상과 선 가시성이 가장 확실함)
  */
-function createWidget(containerId, symbol, interval = "D") {
+function renderChart(containerId, symbol, interval = "D") {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = ''; 
 
     const colors = getPastelColors(containerId);
     
-    // TradingView Advanced Widget 설정
-    return new TradingView.widget({
+    // 주기에 따른 날짜 범위 설정
+    let dateRange = "1M";
+    if (interval === "5" || interval === "60") dateRange = "1D";
+    if (interval === "W") dateRange = "12M";
+
+    const config = {
+        "symbol": symbol,
         "width": "100%",
         "height": "100%",
-        "symbol": symbol,
-        "interval": interval,
-        "timezone": "Asia/Seoul",
-        "theme": "dark",
-        "style": "3", // Area Style
         "locale": "ko",
-        "toolbar_bg": "#1a1f26",
-        "enable_publishing": false,
-        "hide_top_toolbar": true,
-        "hide_legend": true,
-        "save_image": false,
-        "container_id": containerId,
-        "backgroundColor": "#1a1f26",
-        "gridColor": "rgba(45, 55, 72, 0.05)",
-        // 그래프 내부 색상을 파스텔로 강제 적용
-        "overrides": {
-            "mainSeriesProperties.style": 3, // Area
-            "mainSeriesProperties.areaStyle.linecolor": colors.line,
-            "mainSeriesProperties.areaStyle.color1": colors.top,
-            "mainSeriesProperties.areaStyle.color2": "rgba(26, 31, 38, 0)",
-            "mainSeriesProperties.areaStyle.linewidth": 3,
-            "paneProperties.background": "#1a1f26",
-            "paneProperties.vertGridProperties.color": "rgba(255, 255, 255, 0.02)",
-            "paneProperties.horzGridProperties.color": "rgba(255, 255, 255, 0.02)",
-            "scalesProperties.textColor": "#a0aec0",
-            "scalesProperties.fontSize": 11
-        }
-    });
+        "dateRange": dateRange,
+        "colorTheme": "dark",
+        "trendLineColor": colors.line,
+        "underLineColor": colors.top,
+        "underLineBottomColor": "rgba(26, 31, 38, 0)",
+        "isTransparent": true,
+        "autosize": true,
+        "largeChartUrl": ""
+    };
+
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js';
+    script.async = true;
+    script.innerHTML = JSON.stringify(config);
+    
+    container.appendChild(script);
 }
 
 function getPastelColors(id) {
-    let line = "#a5b4fc"; 
+    let line = "rgba(165, 180, 252, 1)"; // Lavender Blue
     
-    // MZ Pastel Color Matching
-    if (id.includes('kospi')) line = "#a5b4fc";      // Lavender
-    else if (id.includes('sp500')) line = "#fda4af"; // Peach
-    else if (id.includes('nasdaq')) line = "#99f6e4"; // Mint
-    else if (id.includes('sox')) line = "#bef264";    // Lime
-    else if (id.includes('samsung')) line = "#a5b4fc"; // Samsung Blue
-    else if (id.includes('k200')) line = "#c084fc";   // Violet
+    if (id.includes('kospi')) line = "rgba(165, 180, 252, 1)";      
+    else if (id.includes('sp500')) line = "rgba(253, 164, 175, 1)"; 
+    else if (id.includes('nasdaq')) line = "rgba(153, 246, 228, 1)"; 
+    else if (id.includes('sox')) line = "rgba(190, 242, 100, 1)";    
+    else if (id.includes('samsung')) line = "rgba(165, 180, 252, 1)"; 
+    else if (id.includes('k200')) line = "rgba(192, 132, 252, 1)";   
     
-    else if (id.includes('fx')) line = "#bef264";     // Lime
-    else if (id.includes('dxy')) line = "#a5b4fc";    // Blue
-    else if (id.includes('yield')) line = "#fda4af";  // Peach
-    else if (id.includes('vix')) line = "#fca5a5";    // Rose
+    else if (id.includes('fx')) line = "rgba(190, 242, 100, 1)";     
+    else if (id.includes('dxy')) line = "rgba(165, 180, 252, 1)";    
+    else if (id.includes('yield')) line = "rgba(253, 164, 175, 1)";  
+    else if (id.includes('vix')) line = "rgba(252, 165, 165, 1)";    
     
-    else if (id.includes('gold')) line = "#fde047";   // Gold
-    else if (id.includes('oil')) line = "#fb923c";    // Orange
-    else if (id.includes('btc')) line = "#f472b6";    // Pink
-    else if (id.includes('eth')) line = "#c084fc";    // Purple
+    else if (id.includes('gold')) line = "rgba(253, 224, 71, 1)";   
+    else if (id.includes('oil')) line = "rgba(251, 146, 60, 1)";    
+    else if (id.includes('btc')) line = "rgba(244, 114, 182, 1)";    
+    else if (id.includes('eth')) line = "rgba(192, 132, 252, 1)";    
 
     return {
         line: line,
-        top: line + "4D" // 30% Alpha
+        top: line.replace('1)', '0.2)') // 20% Alpha for area
     };
 }
 
@@ -114,7 +109,7 @@ function initCharts() {
         const containerId = card.querySelector('.chart-container').id;
         const symbol = card.dataset.symbol;
         const interval = card.querySelector('.int-btn.active')?.dataset.int || "D";
-        createWidget(containerId, symbol, interval);
+        renderChart(containerId, symbol, interval);
     });
 }
 
@@ -130,7 +125,7 @@ function setupIntervalControls() {
             card.querySelectorAll('.int-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
 
-            createWidget(containerId, symbol, interval);
+            renderChart(containerId, symbol, interval);
         });
     });
 }
