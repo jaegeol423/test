@@ -174,14 +174,14 @@ body {
 /* Chart Container */
 .chart-container {
     flex-grow: 1;
-    min-height: 280px;
+    min-height: 400px; /* 위젯 헤더와 차트가 모두 보일 수 있도록 넉넉히 설정 */
     width: 100%;
     border-radius: 18px;
     overflow: hidden;
 }
 
 .chart-container.small {
-    min-height: 200px;
+    min-height: 350px; /* 하단 섹션도 최소 350px 확보 */
 }
 
 /* Footer */
