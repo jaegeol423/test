@@ -1,10 +1,11 @@
 /**
- * MARKET INSIGHT - Alpha Dashboard Logic
+ * MARKET INSIGHT - Final Premium Dashboard Logic
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     initClock();
-    initAllCharts();
+    initCharts();
+    setupIntervalControls();
 });
 
 function initClock() {
@@ -36,84 +37,96 @@ function checkMarketHours(date) {
     return timeValue >= 900 && timeValue <= 1530;
 }
 
-function initAllCharts() {
-    const containers = document.querySelectorAll('.chart-container');
-    containers.forEach(container => {
-        const card = container.closest('.chart-card');
-        renderWidget(container.id, card.dataset.symbol);
+/**
+ * 중복 없는 프리미엄 위젯 렌더링 (가시성 100% 보장)
+ */
+function renderAdvancedPro(containerId, symbol, interval = "D") {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = ''; 
+
+    const colors = getPastelColors(containerId);
+    
+    // 이 방식은 TradingView의 내부 버튼을 숨기고 제가 만든 버튼만 작동하게 합니다.
+    new TradingView.widget({
+        "width": "100%",
+        "height": "100%",
+        "symbol": symbol,
+        "interval": interval,
+        "timezone": "Asia/Seoul",
+        "theme": "dark",
+        "style": "3", // Area Style
+        "locale": "ko",
+        "toolbar_bg": "#1a1f26",
+        "enable_publishing": false,
+        "hide_top_toolbar": true, // 중복 버튼을 제거하기 위해 내부 툴바를 숨김
+        "hide_legend": false, // 상단에 가격과 변동률을 표시하기 위해 활성화
+        "save_image": false,
+        "container_id": containerId,
+        "backgroundColor": "#1a1f26",
+        "gridColor": "rgba(45, 55, 72, 0.05)",
+        "withdateranges": false,
+        "hide_side_toolbar": true,
+        "details": false,
+        "hotlist": false,
+        "calendar": false,
+        // 주기에 따른 데이터 범위 강제 설정 (1D 가시성 문제 해결)
+        "range": interval === "D" ? "3M" : interval === "M" ? "12M" : "1D",
+        "overrides": {
+            "mainSeriesProperties.areaStyle.linecolor": colors.line,
+            "mainSeriesProperties.areaStyle.color1": colors.top,
+            "mainSeriesProperties.areaStyle.color2": "rgba(26, 31, 38, 0)",
+            "mainSeriesProperties.areaStyle.linewidth": 3,
+            "paneProperties.background": "#1a1f26",
+            "paneProperties.vertGridProperties.color": "rgba(255, 255, 255, 0.02)",
+            "paneProperties.horzGridProperties.color": "rgba(255, 255, 255, 0.02)",
+            "scalesProperties.textColor": "#a0aec0",
+            "legendProperties.showSeriesOHLC": true, // 실시간 가격 등락 표시
+            "legendProperties.showBarChange": true  // 변동률 % 표시
+        }
     });
 }
 
-/**
- * 가시성과 파스텔 감성을 100% 보장하는 위젯 렌더링
- */
-function renderWidget(containerId, symbol) {
-    const colors = getPastelColors(containerId);
-    
-    const config = {
-        "symbols": [[symbol, symbol]],
-        "chartOnly": false,
-        "width": "100%",
-        "height": "100%",
-        "locale": "ko",
-        "colorTheme": "dark",
-        "autosize": true,
-        "showVolume": false,
-        "showMA": false,
-        "hideDateRanges": false,
-        "hideMarketStatus": false,
-        "hideSymbolLogo": false,
-        "scalePosition": "right",
-        "scaleMode": "Normal",
-        "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
-        "fontSize": "10",
-        "noOverlays": false,
-        "valuesTracking": "1",
-        "changeMode": "price-and-percent",
-        "chartType": "area",
-        "lineWidth": 2,
-        "lineColor": colors.line,
-        "topColor": colors.top,
-        "bottomColor": "rgba(26, 31, 38, 0)",
-        "dateFormat": "yyyy-MM-dd",
-        "timeHoursFormat": "24-point",
-        "range": "1M" // 기본 범위를 1개월로 설정하여 선 가시성 확보
-    };
-
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
-    script.async = true;
-    script.innerHTML = JSON.stringify(config);
-    
-    const container = document.getElementById(containerId);
-    if (container) container.appendChild(script);
-}
-
 function getPastelColors(id) {
-    let line = "rgba(165, 180, 252, 1)"; // Lavender
-    
+    let line = "rgba(165, 180, 252, 1)"; 
     if (id.includes('kospi')) line = "rgba(165, 180, 252, 1)";      
     else if (id.includes('sp500')) line = "rgba(253, 164, 175, 1)"; 
     else if (id.includes('nasdaq')) line = "rgba(153, 246, 228, 1)"; 
-    else if (id.includes('nikkei')) line = "rgba(165, 180, 252, 1)";
-    else if (id.includes('dax')) line = "rgba(192, 132, 252, 1)";
-    else if (id.includes('hsi')) line = "rgba(253, 164, 175, 1)";
-    
     else if (id.includes('sox')) line = "rgba(190, 242, 100, 1)";    
     else if (id.includes('lit')) line = "rgba(153, 246, 228, 1)";
-    else if (id.includes('schd')) line = "rgba(165, 180, 252, 1)";
-    else if (id.includes('xlk')) line = "rgba(192, 132, 252, 1)";
-    
-    else if (id.includes('gold')) line = "rgba(253, 224, 71, 1)";   
-    else if (id.includes('silver')) line = "rgba(226, 232, 240, 1)";
-    else if (id.includes('oil')) line = "rgba(251, 146, 60, 1)";    
     else if (id.includes('fx')) line = "rgba(190, 242, 100, 1)";     
-    
+    else if (id.includes('gold')) line = "rgba(253, 224, 71, 1)";   
     else if (id.includes('nvda')) line = "rgba(153, 246, 228, 1)";
-    else if (id.includes('tsla')) line = "rgba(252, 165, 165, 1)";
     else if (id.includes('btc')) line = "rgba(244, 114, 182, 1)";    
     else if (id.includes('eth')) line = "rgba(192, 132, 252, 1)";    
 
     return { line: line, top: line.replace('1)', '0.3)') };
+}
+
+function initCharts() {
+    const cards = document.querySelectorAll('.chart-card');
+    cards.forEach(card => {
+        const container = card.querySelector('.chart-container');
+        const symbol = card.dataset.symbol;
+        if (container && symbol) {
+            renderAdvancedPro(container.id, symbol, "D");
+        }
+    });
+}
+
+function setupIntervalControls() {
+    const buttons = document.querySelectorAll('.int-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const card = e.target.closest('.chart-card');
+            const container = card.querySelector('.chart-container');
+            const symbol = card.dataset.symbol;
+            const interval = e.target.dataset.int;
+
+            card.querySelectorAll('.int-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+
+            renderAdvancedPro(container.id, symbol, interval);
+        });
+    });
 }
