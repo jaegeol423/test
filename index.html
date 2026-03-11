@@ -3,110 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KOSPI Market Dashboard - 실시간 증시 요약</title>
+    <title>KOSPI Market Dashboard - MZ Pastel Edition</title>
     <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 </head>
 <body>
     <header class="header">
         <div class="logo-area">
-            <h1 class="title">KOSPI MARKET DASHBOARD</h1>
-            <p class="subtitle">실시간 글로벌 시장 지표 및 코스피 분석 (Multi-Interval)</p>
+            <h1 class="title">MARKET INSIGHT</h1>
+            <p class="subtitle">실시간 글로벌 지수 및 원자재 모니터링</p>
         </div>
         <div class="market-status">
             <span class="status-dot pulse"></span>
-            <span id="market-time">MARKET OPEN</span>
+            <span id="market-time">LOADING...</span>
         </div>
     </header>
 
-    <main class="dashboard-grid">
-        <!-- 1. KOSPI -->
-        <div class="chart-card" data-symbol="AMEX:EWY" data-title="KOSPI (한국 지수 - EWY)">
-            <div class="card-header">
-                <h2 class="chart-title">KOSPI (한국 지수)</h2>
-                <div class="interval-selector">
-                    <button class="int-btn" data-int="5">5m</button>
-                    <button class="int-btn" data-int="60">1h</button>
-                    <button class="int-btn active" data-int="D">D</button>
-                    <button class="int-btn" data-int="W">W</button>
+    <main class="container">
+        <!-- SECTION 1: MAJOR MARKET INDICES -->
+        <section class="dashboard-section">
+            <h2 class="section-label">GLOBAL MARKET LEADERS</h2>
+            <div class="dashboard-grid main-grid">
+                <div class="chart-card" data-symbol="AMEX:EWY" data-title="KOSPI (EWY)">
+                    <div class="card-header">
+                        <h3 class="chart-title">KOSPI (한국)</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="W">W</button>
+                        </div>
+                    </div>
+                    <div id="chart_kospi" class="chart-container"></div>
+                </div>
+                <div class="chart-card" data-symbol="AMEX:SPY" data-title="S&P 500 (SPY)">
+                    <div class="card-header">
+                        <h3 class="chart-title">S&P 500 (미국)</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="W">W</button>
+                        </div>
+                    </div>
+                    <div id="chart_sp500" class="chart-container"></div>
+                </div>
+                <div class="chart-card" data-symbol="NASDAQ:QQQ" data-title="NASDAQ 100 (QQQ)">
+                    <div class="card-header">
+                        <h3 class="chart-title">NASDAQ 100</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="W">W</button>
+                        </div>
+                    </div>
+                    <div id="chart_nasdaq" class="chart-container"></div>
+                </div>
+                <div class="chart-card" data-symbol="KRX:KOSPI200" data-title="KOSPI 200">
+                    <div class="card-header">
+                        <h3 class="chart-title">KOSPI 200</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="W">W</button>
+                        </div>
+                    </div>
+                    <div id="chart_k200" class="chart-container"></div>
+                </div>
+                <div class="chart-card" data-symbol="FX_IDC:USDKRW" data-title="USD/KRW">
+                    <div class="card-header">
+                        <h3 class="chart-title">USD / KRW</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="W">W</button>
+                        </div>
+                    </div>
+                    <div id="chart_fx" class="chart-container"></div>
+                </div>
+                <div class="chart-card" data-symbol="TVC:US10Y" data-title="US 10Y YIELD">
+                    <div class="card-header">
+                        <h3 class="chart-title">US 10Y 국채</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn" data-int="5">5m</button>
+                            <button class="int-btn active" data-int="D">D</button>
+                            <button class="int-btn" data-int="W">W</button>
+                        </div>
+                    </div>
+                    <div id="chart_yield" class="chart-container"></div>
                 </div>
             </div>
-            <div id="chart_kospi" class="chart-container"></div>
-        </div>
+        </section>
 
-        <!-- 2. S&P 500 -->
-        <div class="chart-card" data-symbol="AMEX:SPY" data-title="S&P 500 (미국 대형주 - SPY)">
-            <div class="card-header">
-                <h2 class="chart-title">S&P 500 (미국 대형주)</h2>
-                <div class="interval-selector">
-                    <button class="int-btn" data-int="5">5m</button>
-                    <button class="int-btn" data-int="60">1h</button>
-                    <button class="int-btn active" data-int="D">D</button>
-                    <button class="int-btn" data-int="W">W</button>
+        <!-- SECTION 2: COMMODITIES & CRYPTO -->
+        <section class="dashboard-section">
+            <h2 class="section-label">COMMODITIES & CRYPTO</h2>
+            <div class="dashboard-grid sub-grid">
+                <div class="chart-card mini" data-symbol="TVC:GOLD" data-title="GOLD">
+                    <div class="card-header">
+                        <h3 class="chart-title">GOLD (금)</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                        </div>
+                    </div>
+                    <div id="chart_gold" class="chart-container small"></div>
+                </div>
+                <div class="chart-card mini" data-symbol="TVC:USOIL" data-title="CRUDE OIL">
+                    <div class="card-header">
+                        <h3 class="chart-title">CRUDE OIL (유가)</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                        </div>
+                    </div>
+                    <div id="chart_oil" class="chart-container small"></div>
+                </div>
+                <div class="chart-card mini" data-symbol="TVC:NATURALGAS" data-title="NATURAL GAS">
+                    <div class="card-header">
+                        <h3 class="chart-title">GAS (천연가스)</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                        </div>
+                    </div>
+                    <div id="chart_gas" class="chart-container small"></div>
+                </div>
+                <div class="chart-card mini" data-symbol="TVC:SILVER" data-title="SILVER">
+                    <div class="card-header">
+                        <h3 class="chart-title">SILVER (은)</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                        </div>
+                    </div>
+                    <div id="chart_silver" class="chart-container small"></div>
+                </div>
+                <div class="chart-card mini" data-symbol="BINANCE:BTCUSDT" data-title="BITCOIN">
+                    <div class="card-header">
+                        <h3 class="chart-title">BITCOIN (비트코인)</h3>
+                        <div class="interval-selector">
+                            <button class="int-btn active" data-int="D">D</button>
+                        </div>
+                    </div>
+                    <div id="chart_btc" class="chart-container small"></div>
                 </div>
             </div>
-            <div id="chart_sp500" class="chart-container"></div>
-        </div>
-
-        <!-- 3. NASDAQ 100 -->
-        <div class="chart-card" data-symbol="NASDAQ:QQQ" data-title="NASDAQ 100 (기술주 - QQQ)">
-            <div class="card-header">
-                <h2 class="chart-title">NASDAQ 100 (기술주)</h2>
-                <div class="interval-selector">
-                    <button class="int-btn" data-int="5">5m</button>
-                    <button class="int-btn" data-int="60">1h</button>
-                    <button class="int-btn active" data-int="D">D</button>
-                    <button class="int-btn" data-int="W">W</button>
-                </div>
-            </div>
-            <div id="chart_nasdaq" class="chart-container"></div>
-        </div>
-
-        <!-- 4. KOSPI 200 -->
-        <div class="chart-card" data-symbol="KRX:KOSPI200" data-title="KOSPI 200 (국내 우량주)">
-            <div class="card-header">
-                <h2 class="chart-title">KOSPI 200 (국내 우량주)</h2>
-                <div class="interval-selector">
-                    <button class="int-btn" data-int="5">5m</button>
-                    <button class="int-btn" data-int="60">1h</button>
-                    <button class="int-btn active" data-int="D">D</button>
-                    <button class="int-btn" data-int="W">W</button>
-                </div>
-            </div>
-            <div id="chart_k200" class="chart-container"></div>
-        </div>
-
-        <!-- 5. USD/KRW -->
-        <div class="chart-card" data-symbol="FX_IDC:USDKRW" data-title="USD / KRW (원/달러 환율)">
-            <div class="card-header">
-                <h2 class="chart-title">USD / KRW (환율)</h2>
-                <div class="interval-selector">
-                    <button class="int-btn" data-int="5">5m</button>
-                    <button class="int-btn" data-int="60">1h</button>
-                    <button class="int-btn active" data-int="D">D</button>
-                    <button class="int-btn" data-int="W">W</button>
-                </div>
-            </div>
-            <div id="chart_fx" class="chart-container"></div>
-        </div>
-
-        <!-- 6. US 10Y Yield -->
-        <div class="chart-card" data-symbol="TVC:US10Y" data-title="US 10Y YIELD (미국채 10년)">
-            <div class="card-header">
-                <h2 class="chart-title">US 10Y YIELD (국채금리)</h2>
-                <div class="interval-selector">
-                    <button class="int-btn" data-int="5">5m</button>
-                    <button class="int-btn" data-int="60">1h</button>
-                    <button class="int-btn active" data-int="D">D</button>
-                    <button class="int-btn" data-int="W">W</button>
-                </div>
-            </div>
-            <div id="chart_yield" class="chart-container"></div>
-        </div>
+        </section>
     </main>
 
     <footer class="footer">
-        <p>Charts powered by TradingView. Interval selection enabled for real-time analysis.</p>
+        <p>Market Data powered by TradingView. Interactive Dashboard for Index Investors.</p>
     </footer>
 
     <script src="main.js"></script>

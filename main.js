@@ -1,5 +1,5 @@
 /**
- * KOSPI Market Dashboard - Logic & Charts (MZ Pastel Edition)
+ * KOSPI Market Dashboard - MZ Pastel Edition
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,9 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupIntervalControls();
 });
 
-/**
- * 실시간 시계 업데이트
- */
 function initClock() {
     const timeDisplay = document.getElementById('market-time');
     const dot = document.querySelector('.status-dot');
@@ -20,11 +17,10 @@ function initClock() {
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        timeDisplay.innerHTML = `${hours}:${minutes}:${seconds}`;
+        
         const isMarketOpen = checkMarketHours(now);
-        const statusText = isMarketOpen ? 'MARKET OPEN' : 'MARKET CLOSED';
-        
-        timeDisplay.innerHTML = `${statusText} | ${hours}:${minutes}:${seconds}`;
-        
         if (isMarketOpen) {
             dot.style.backgroundColor = '#bef264';
             dot.classList.add('pulse');
@@ -44,17 +40,13 @@ function checkMarketHours(date) {
     return timeValue >= 900 && timeValue <= 1530;
 }
 
-/**
- * 차트 생성 함수 (스크립트 주입 방식)
- * 이 방식이 색상 변경과 가시성에 가장 확실합니다.
- */
 function renderChart(containerId, symbol, interval = "D") {
     const container = document.getElementById(containerId);
-    container.innerHTML = ''; // 기존 차트 제거
+    if (!container) return;
+    container.innerHTML = ''; 
 
     const colors = getPastelColors(containerId);
     
-    // TradingView 위젯 설정 생성
     const config = {
         "symbol": symbol,
         "width": "100%",
@@ -66,8 +58,7 @@ function renderChart(containerId, symbol, interval = "D") {
         "underLineColor": colors.top,
         "underLineBottomColor": "rgba(26, 31, 38, 0)",
         "isTransparent": true,
-        "autosize": true,
-        "largeChartUrl": ""
+        "autosize": true
     };
 
     const script = document.createElement('script');
@@ -81,16 +72,25 @@ function renderChart(containerId, symbol, interval = "D") {
 
 function getPastelColors(id) {
     let line = "#a5b4fc"; 
-    if (id.includes('kospi')) line = "#a5b4fc";      // Lavender Blue
-    else if (id.includes('sp500')) line = "#fda4af"; // Soft Peach
-    else if (id.includes('nasdaq')) line = "#99f6e4"; // Mint
-    else if (id.includes('k200')) line = "#c084fc";   // Violet
-    else if (id.includes('fx')) line = "#bef264";     // Lime
-    else if (id.includes('yield')) line = "#fca5a5";  // Rose
-
+    
+    // Indices
+    if (id.includes('kospi')) line = "#a5b4fc";      
+    else if (id.includes('sp500')) line = "#fda4af"; 
+    else if (id.includes('nasdaq')) line = "#99f6e4"; 
+    else if (id.includes('k200')) line = "#c084fc";   
+    else if (id.includes('fx')) line = "#bef264";     
+    else if (id.includes('yield')) line = "#fca5a5";  
+    
+    // Commodities & Crypto
+    else if (id.includes('gold')) line = "#fde047";   // Gold Pastel
+    else if (id.includes('oil')) line = "#fb923c";    // Orange/Oil
+    else if (id.includes('gas')) line = "#38bdf8";    // Sky Blue
+    else if (id.includes('silver')) line = "#e2e8f0"; // Silver Gray
+    else if (id.includes('btc')) line = "#f472b6";    // Pink/Bitcoin
+    
     return {
         line: line,
-        top: line + "33" // 20% Alpha
+        top: line + "33" 
     };
 }
 
@@ -99,7 +99,8 @@ function initCharts() {
     cards.forEach(card => {
         const containerId = card.querySelector('.chart-container').id;
         const symbol = card.dataset.symbol;
-        renderChart(containerId, symbol, "D");
+        const interval = card.querySelector('.int-btn.active')?.dataset.int || "D";
+        renderChart(containerId, symbol, interval);
     });
 }
 
