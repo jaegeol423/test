@@ -145,6 +145,22 @@ body {
 }
 
 @media (max-width: 768px) {
+    .title {
+        font-size: 2.5rem;
+    }
+    .subtitle {
+        font-size: 1rem;
+    }
+    .filter-container {
+        gap: 10px;
+    }
+    .filter-btn {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+    #canvas-container {
+        height: 50vh;
+    }
     .section-title {
         font-size: 1.5rem;
     }

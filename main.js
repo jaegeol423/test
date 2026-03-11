@@ -1,6 +1,3 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-
 // --- 기본 설정 ----------------------------------------------------------------
 const canvasContainer = document.getElementById('canvas-container');
 const scene = new THREE.Scene();
@@ -13,7 +10,8 @@ canvasContainer.appendChild(renderer.domElement);
 camera.position.set(0, 1.5, 8);
 
 // --- 컨트롤 -----------------------------------------------------------------
-const controls = new OrbitControls(camera, renderer.domElement);
+// CDN으로 불러온 OrbitControls는 THREE.OrbitControls로 접근합니다.
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.target.set(0, 1.5, 0);
 
@@ -184,6 +182,7 @@ const curatedVideos = [
 const youtubeContainer = document.getElementById('youtube-container');
 
 function renderYoutubeVideos() {
+    if (!youtubeContainer) return;
     curatedVideos.forEach(video => {
         const card = document.createElement('div');
         card.className = 'video-card';
