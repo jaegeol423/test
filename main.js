@@ -1,5 +1,5 @@
 /**
- * MARKET INSIGHT - Final Professional Edition
+ * MARKET INSIGHT - Professional Mega Dashboard Logic
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -36,9 +36,6 @@ function checkMarketHours(date) {
     return timeValue >= 900 && timeValue <= 1530;
 }
 
-/**
- * 모든 차트 초기화 (수동 재생성 버튼 제거, 위젯 자체 기능 활용)
- */
 function initAllCharts() {
     const containers = document.querySelectorAll('.chart-container');
     containers.forEach(container => {
@@ -46,13 +43,8 @@ function initAllCharts() {
     });
 }
 
-/**
- * 가시성과 파스텔 감성을 100% 보장하는 위젯 렌더링
- */
 function renderWidget(containerId, symbol) {
     const colors = getPastelColors(containerId);
-    
-    // 이 위젯 엔진은 자체적으로 '1D, 1M, 1Y' 등 주기 버튼을 포함하고 있어 가장 안정적입니다.
     const config = {
         "symbols": [[symbol, symbol]],
         "chartOnly": false,
@@ -88,23 +80,44 @@ function renderWidget(containerId, symbol) {
     script.async = true;
     script.innerHTML = JSON.stringify(config);
     
-    document.getElementById(containerId).appendChild(script);
+    const container = document.getElementById(containerId);
+    if (container) container.appendChild(script);
 }
 
 function getPastelColors(id) {
-    let line = "rgba(165, 180, 252, 1)"; 
+    let line = "rgba(165, 180, 252, 1)"; // Default Lavender
+    
+    // Core & Tech
     if (id.includes('kospi')) line = "rgba(165, 180, 252, 1)";      
     else if (id.includes('sp500')) line = "rgba(253, 164, 175, 1)"; 
     else if (id.includes('nasdaq')) line = "rgba(153, 246, 228, 1)"; 
     else if (id.includes('sox')) line = "rgba(190, 242, 100, 1)";    
+    else if (id.includes('nikkei')) line = "rgba(165, 180, 252, 1)";
+    else if (id.includes('dax')) line = "rgba(192, 132, 252, 1)";
+    
+    // Macro & FX
     else if (id.includes('fx')) line = "rgba(190, 242, 100, 1)";     
     else if (id.includes('dxy')) line = "rgba(165, 180, 252, 1)";    
     else if (id.includes('yield')) line = "rgba(253, 164, 175, 1)";  
     else if (id.includes('vix')) line = "rgba(252, 165, 165, 1)";    
+    else if (id.includes('eur')) line = "rgba(153, 246, 228, 1)";
+    else if (id.includes('jpy')) line = "rgba(253, 164, 175, 1)";
+    
+    // Commodities
     else if (id.includes('gold')) line = "rgba(253, 224, 71, 1)";   
+    else if (id.includes('silver')) line = "rgba(226, 232, 240, 1)";
     else if (id.includes('oil')) line = "rgba(251, 146, 60, 1)";    
+    else if (id.includes('gas')) line = "rgba(56, 189, 248, 1)";
+    else if (id.includes('copper')) line = "rgba(251, 146, 60, 1)";
+    else if (id.includes('lithium')) line = "rgba(190, 242, 100, 1)";
+    
+    // Crypto & Tech Leaders
+    else if (id.includes('nvda')) line = "rgba(153, 246, 228, 1)";
+    else if (id.includes('aapl')) line = "rgba(165, 180, 252, 1)";
+    else if (id.includes('tsla')) line = "rgba(252, 165, 165, 1)";
     else if (id.includes('btc')) line = "rgba(244, 114, 182, 1)";    
     else if (id.includes('eth')) line = "rgba(192, 132, 252, 1)";    
+    else if (id.includes('sol')) line = "rgba(192, 132, 252, 1)";
 
     return { line: line, top: line.replace('1)', '0.3)') };
 }

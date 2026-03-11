@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MARKET INSIGHT - Final Professional Edition</title>
+    <title>MARKET INSIGHT - Professional Mega Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="header">
         <div class="logo-area">
             <h1 class="title">MARKET INSIGHT</h1>
-            <p class="subtitle">실시간 글로벌 증시 · 매크로 · 원자재 대시보드</p>
+            <p class="subtitle">Mega Dashboard: 글로벌 증시 · 매크로 · 원자재 · 가상자산</p>
         </div>
         <div class="market-status">
             <span class="status-dot pulse"></span>
@@ -19,78 +19,61 @@
     </header>
 
     <main class="container">
-        <!-- SECTION 1: MARKET CORE -->
+        <!-- SECTION 1: GLOBAL INDICES -->
         <section class="dashboard-section">
-            <h2 class="section-label">MARKET CORE (핵심 지수)</h2>
+            <h2 class="section-label">GLOBAL INDICES (주요 지수)</h2>
             <div class="dashboard-grid main-grid">
-                <div class="chart-card">
-                    <h3 class="chart-title">KOSPI (한국)</h3>
-                    <div id="chart_kospi" class="chart-container" data-symbol="AMEX:EWY"></div>
-                </div>
-                <div class="chart-card">
-                    <h3 class="chart-title">S&P 500 (미국)</h3>
-                    <div id="chart_sp500" class="chart-container" data-symbol="AMEX:SPY"></div>
-                </div>
-                <div class="chart-card">
-                    <h3 class="chart-title">NASDAQ 100</h3>
-                    <div id="chart_nasdaq" class="chart-container" data-symbol="NASDAQ:QQQ"></div>
-                </div>
-                <div class="chart-card">
-                    <h3 class="chart-title">반도체 (SOX)</h3>
-                    <div id="chart_sox" class="chart-container" data-symbol="NASDAQ:SOXX"></div>
-                </div>
+                <div class="chart-card"><h3 class="chart-title">KOSPI (한국)</h3><div id="chart_kospi" class="chart-container" data-symbol="AMEX:EWY"></div></div>
+                <div class="chart-card"><h3 class="chart-title">S&P 500 (미국)</h3><div id="chart_sp500" class="chart-container" data-symbol="AMEX:SPY"></div></div>
+                <div class="chart-card"><h3 class="chart-title">NASDAQ 100</h3><div id="chart_nasdaq" class="chart-container" data-symbol="NASDAQ:QQQ"></div></div>
+                <div class="chart-card"><h3 class="chart-title">반도체 (SOX)</h3><div id="chart_sox" class="chart-container" data-symbol="NASDAQ:SOXX"></div></div>
+                <div class="chart-card"><h3 class="chart-title">NIKKEI 225 (일본)</h3><div id="chart_nikkei" class="chart-container" data-symbol="TVC:NI225"></div></div>
+                <div class="chart-card"><h3 class="chart-title">DAX (독일)</h3><div id="chart_dax" class="chart-container" data-symbol="XETR:DAX"></div></div>
             </div>
         </section>
 
-        <!-- SECTION 2: MACRO & SENTIMENT -->
+        <!-- SECTION 2: MACRO & FX -->
         <section class="dashboard-section">
-            <h2 class="section-label">MACRO & SENTIMENT (거시 지표)</h2>
+            <h2 class="section-label">MACRO & FX (거시 및 외환)</h2>
             <div class="dashboard-grid sub-grid">
-                <div class="chart-card mini">
-                    <h3 class="chart-title">원/달러 환율</h3>
-                    <div id="chart_fx" class="chart-container small" data-symbol="FX_IDC:USDKRW"></div>
-                </div>
-                <div class="chart-card mini">
-                    <h3 class="chart-title">달러 인덱스 (DXY)</h3>
-                    <div id="chart_dxy" class="chart-container small" data-symbol="TVC:DXY"></div>
-                </div>
-                <div class="chart-card mini">
-                    <h3 class="chart-title">미국채 10년 금리</h3>
-                    <div id="chart_yield" class="chart-container small" data-symbol="TVC:US10Y"></div>
-                </div>
-                <div class="chart-card mini">
-                    <h3 class="chart-title">VIX (공포지수)</h3>
-                    <div id="chart_vix" class="chart-container small" data-symbol="TVC:VIX"></div>
-                </div>
+                <div class="chart-card mini"><h3 class="chart-title">원/달러 환율</h3><div id="chart_fx" class="chart-container small" data-symbol="FX_IDC:USDKRW"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">달러 인덱스 (DXY)</h3><div id="chart_dxy" class="chart-container small" data-symbol="TVC:DXY"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">미국채 10년</h3><div id="chart_yield" class="chart-container small" data-symbol="TVC:US10Y"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">VIX (공포지수)</h3><div id="chart_vix" class="chart-container small" data-symbol="TVC:VIX"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">유로/달러 (EUR)</h3><div id="chart_eur" class="chart-container small" data-symbol="FX:EURUSD"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">엔/원 (JPY)</h3><div id="chart_jpy" class="chart-container small" data-symbol="FX_IDC:JPYKRW"></div></div>
             </div>
         </section>
 
-        <!-- SECTION 3: ASSETS -->
+        <!-- SECTION 3: COMMODITIES -->
         <section class="dashboard-section">
-            <h2 class="section-label">ALTERNATIVE ASSETS (자산)</h2>
+            <h2 class="section-label">COMMODITIES (원자재)</h2>
             <div class="dashboard-grid sub-grid">
-                <div class="chart-card mini">
-                    <h3 class="chart-title">GOLD (금)</h3>
-                    <div id="chart_gold" class="chart-container small" data-symbol="TVC:GOLD"></div>
-                </div>
-                <div class="chart-card mini">
-                    <h3 class="chart-title">WTI (원유)</h3>
-                    <div id="chart_oil" class="chart-container small" data-symbol="TVC:USOIL"></div>
-                </div>
-                <div class="chart-card mini">
-                    <h3 class="chart-title">비트코인</h3>
-                    <div id="chart_btc" class="chart-container small" data-symbol="BINANCE:BTCUSDT"></div>
-                </div>
-                <div class="chart-card mini">
-                    <h3 class="chart-title">이더리움</h3>
-                    <div id="chart_eth" class="chart-container small" data-symbol="BINANCE:ETHUSDT"></div>
-                </div>
+                <div class="chart-card mini"><h3 class="chart-title">GOLD (금)</h3><div id="chart_gold" class="chart-container small" data-symbol="TVC:GOLD"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">SILVER (은)</h3><div id="chart_silver" class="chart-container small" data-symbol="TVC:SILVER"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">WTI (원유)</h3><div id="chart_oil" class="chart-container small" data-symbol="TVC:USOIL"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">NATURAL GAS</h3><div id="chart_gas" class="chart-container small" data-symbol="TVC:NATURALGAS"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">COPPER (구리)</h3><div id="chart_copper" class="chart-container small" data-symbol="TVC:HG1!"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">LITHIUM (리튬)</h3><div id="chart_lithium" class="chart-container small" data-symbol="GLOBALX:LIT"></div></div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: TECH LEADERS & CRYPTO -->
+        <section class="dashboard-section">
+            <h2 class="section-label">TECH LEADERS & CRYPTO (주도주 및 코인)</h2>
+            <div class="dashboard-grid sub-grid">
+                <div class="chart-card mini"><h3 class="chart-title">엔비디아 (NVDA)</h3><div id="chart_nvda" class="chart-container small" data-symbol="NASDAQ:NVDA"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">애플 (AAPL)</h3><div id="chart_aapl" class="chart-container small" data-symbol="NASDAQ:AAPL"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">테슬라 (TSLA)</h3><div id="chart_tsla" class="chart-container small" data-symbol="NASDAQ:TSLA"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">비트코인 (BTC)</h3><div id="chart_btc" class="chart-container small" data-symbol="BINANCE:BTCUSDT"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">이더리움 (ETH)</h3><div id="chart_eth" class="chart-container small" data-symbol="BINANCE:ETHUSDT"></div></div>
+                <div class="chart-card mini"><h3 class="chart-title">솔라나 (SOL)</h3><div id="chart_sol" class="chart-container small" data-symbol="BINANCE:SOLUSDT"></div></div>
             </div>
         </section>
     </main>
 
     <footer class="footer">
-        <p>Market Insight Professional Dashboard. MZ Pastel Theme Applied.</p>
+        <p>Market Insight Professional Mega Dashboard. MZ Pastel Theme Applied.</p>
     </footer>
 
     <script src="main.js"></script>
