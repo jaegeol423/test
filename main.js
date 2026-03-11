@@ -43,8 +43,12 @@ function initAllCharts() {
     });
 }
 
+/**
+ * 기본 범위를 1M으로 설정하여 가시성 문제를 해결한 렌더링 함수
+ */
 function renderWidget(containerId, symbol) {
     const colors = getPastelColors(containerId);
+    
     const config = {
         "symbols": [[symbol, symbol]],
         "chartOnly": false,
@@ -71,7 +75,8 @@ function renderWidget(containerId, symbol) {
         "topColor": colors.top,
         "bottomColor": "rgba(26, 31, 38, 0)",
         "dateFormat": "yyyy-MM-dd",
-        "timeHoursFormat": "24-point"
+        "timeHoursFormat": "24-point",
+        "range": "1M" // 핵심: 기본 표시 범위를 1개월로 설정하여 선이 항상 보이게 함
     };
 
     const script = document.createElement('script');
@@ -85,9 +90,8 @@ function renderWidget(containerId, symbol) {
 }
 
 function getPastelColors(id) {
-    let line = "rgba(165, 180, 252, 1)"; // Default Lavender
+    let line = "rgba(165, 180, 252, 1)"; 
     
-    // Core & Tech
     if (id.includes('kospi')) line = "rgba(165, 180, 252, 1)";      
     else if (id.includes('sp500')) line = "rgba(253, 164, 175, 1)"; 
     else if (id.includes('nasdaq')) line = "rgba(153, 246, 228, 1)"; 
@@ -95,7 +99,6 @@ function getPastelColors(id) {
     else if (id.includes('nikkei')) line = "rgba(165, 180, 252, 1)";
     else if (id.includes('dax')) line = "rgba(192, 132, 252, 1)";
     
-    // Macro & FX
     else if (id.includes('fx')) line = "rgba(190, 242, 100, 1)";     
     else if (id.includes('dxy')) line = "rgba(165, 180, 252, 1)";    
     else if (id.includes('yield')) line = "rgba(253, 164, 175, 1)";  
@@ -103,7 +106,6 @@ function getPastelColors(id) {
     else if (id.includes('eur')) line = "rgba(153, 246, 228, 1)";
     else if (id.includes('jpy')) line = "rgba(253, 164, 175, 1)";
     
-    // Commodities
     else if (id.includes('gold')) line = "rgba(253, 224, 71, 1)";   
     else if (id.includes('silver')) line = "rgba(226, 232, 240, 1)";
     else if (id.includes('oil')) line = "rgba(251, 146, 60, 1)";    
@@ -111,7 +113,6 @@ function getPastelColors(id) {
     else if (id.includes('copper')) line = "rgba(251, 146, 60, 1)";
     else if (id.includes('lithium')) line = "rgba(190, 242, 100, 1)";
     
-    // Crypto & Tech Leaders
     else if (id.includes('nvda')) line = "rgba(153, 246, 228, 1)";
     else if (id.includes('aapl')) line = "rgba(165, 180, 252, 1)";
     else if (id.includes('tsla')) line = "rgba(252, 165, 165, 1)";
