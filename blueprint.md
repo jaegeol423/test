@@ -1,32 +1,36 @@
-# Blueprint: Premium Lotto Generator
+# Blueprint: KOSPI Market Dashboard
 
 ## Overview
 
-A premium, visually engaging web application for generating lucky Lotto numbers. It features a modern dark theme with gold accents, animated number drawing, a history tracking system, and a **Saju-based weighted generation** feature.
+A real-time financial dashboard designed to monitor the KOSPI index and its primary global influencers. It provides a centralized view of various charts, including US futures, exchange rates, and key stocks, helping investors predict market movements at a glance.
 
 ## Features
 
-*   **Saju-Based Analysis:** Users can input their birthdate to receive a personalized "Four Pillars of Destiny" (Saju) analysis based on the five elements (Wood, Fire, Earth, Metal, Water).
-*   **Weighted Number Generation:** The system provides personalized luck scores and biases the random generation towards numbers associated with the user's analyzed Saju element.
-*   **Dynamic Number Generation:** Generates 6 unique random numbers between 1 and 45, sorted automatically.
-*   **Animated Drawing Experience:** Numbers appear one by one with a smooth "pop-in" animation to build excitement.
-*   **Official Color Coding:** Balls are colored according to standard Lotto number ranges (1-10 Yellow, 11-20 Blue, 21-30 Red, 31-40 Gray, 41-45 Green).
-*   **Persistent History:** Keeps track of the last 10 drawing sessions using browser LocalStorage, including the Saju type used for each draw.
-*   **Premium Aesthetic:** Uses a high-contrast dark theme with gold gradients and glassmorphism effects.
-*   **Responsive Design:** Fully optimized for both desktop and mobile viewing.
+*   **Multi-Chart Grid:** A responsive layout displaying multiple financial charts simultaneously using TradingView widgets.
+*   **Real-Time Monitoring:** Tracks S&P 500, NASDAQ, and KOSPI 200 futures to gauge market sentiment.
+*   **Currency Tracker:** Real-time USD/KRW exchange rate monitoring to understand foreign capital flow.
+*   **Key Stock Watch:** Focuses on market leaders like Samsung Electronics.
+*   **Economic Indicators:** Monitors US 10Y Treasury Yields and other macro data.
+*   **Dark Mode UI:** A professional, high-contrast dark theme optimized for long-term monitoring and data readability.
+
+## Components to Track
+
+1.  **KOSPI Index:** The primary target.
+2.  **S&P 500 / NASDAQ 100 Futures:** Major overnight indicators.
+3.  **USD/KRW:** Impact on foreign investment.
+4.  **US 10Y Yield:** Global liquidity indicator.
+5.  **VIX:** Market volatility/fear index.
+6.  **Samsung Electronics (005930):** The heavyweight of the KOSPI.
 
 ## Technical Stack
 
-*   **HTML5:** Semantic structure.
-*   **CSS3:** Custom animations, Flexbox/Grid layout, and CSS variables for theme management.
-*   **JavaScript (ES6+):** Async/Await for animations, DOM manipulation, LocalStorage integration, and Saju analysis logic.
-*   **Typography:** Pretendard (Modern sans-serif).
+*   **HTML5/CSS3:** Grid/Flexbox for the dashboard layout.
+*   **JavaScript:** Minor logic for UI interactions and widget initialization.
+*   **TradingView Widgets:** External library for high-quality, real-time financial charts.
 
-## Development Lifecycle
+## Implementation Steps
 
-1.  **UI/UX Design:** Establish the gold/dark "premium" theme.
-2.  **Core Logic:** Implement the unique random number generator.
-3.  **Saju Implementation:** Add birthdate input and element-based analysis logic.
-4.  **Visual Feedback:** Create the CSS animations for the lotto balls and Saju result cards.
-5.  **State Management:** Implement history tracking with LocalStorage.
-6.  **Refinement:** Ensure mobile responsiveness and cross-browser compatibility.
+1.  **Layout Design:** Create a responsive CSS Grid for a 2x3 or 3x2 chart layout.
+2.  **Widget Integration:** Embed TradingView's lightweight charts and technical analysis widgets.
+3.  **Refinement:** Ensure all charts are synchronized and look consistent in the dark theme.
+4.  **Mobile Optimization:** Stack charts vertically for mobile devices.
